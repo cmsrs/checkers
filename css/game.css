@@ -1,0 +1,100 @@
+body
+{
+    font:  Verdana, Arial, Helvetica, sans-serif;
+    color: #050505;
+}
+.clearfix:after{
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+#main_canvas{
+    margin-left: 3px;
+    border : 1px solid #191919;
+}
+#square-size {
+    position : absolute;
+    width : 1em;
+    height : 1em;
+    left : -1000px;
+}
+header{
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+header a#logo_game{
+    text-decoration:none;
+    font-weight: bold;
+    float: left;
+    font-family : Ubuntu;
+    font-size: 18px;
+}
+header a#logo_game span.cms{
+    color: #b1ccdd;
+}
+header a#logo_game span.rs{
+    color: #ff5050; 
+}
+h1{
+    margin-top: 0px;
+    margin-bottom: 0px;
+    float: right;
+    font-size: 25px;
+    font-weight: bold;
+}
+#think{
+    position: relative;
+    color: #ff5050;
+    font-size: 25px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+
+}
+#display_text {
+    text-align:center;
+}
+#anim {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #174f82;
+}
+#score{
+    margin-left: 3px;
+    margin-top: 6px;
+    font-size: 22px;
+}
+#score .you{
+    float: left;
+}
+#score .cpu{
+    float: right;
+}
+#score span.red{
+    color: #ff5050;
+}
+#level{
+    margin-top: 5px;
+    margin-bottom: 6px;
+    font-size: 22px;
+}
+#level > div{
+    float: left;
+}
+#level .circle{
+    float: left;
+}
+/*
+#level .wrap_level{
+    float: left;
+}
+#level .wrap_level input{
+    display:inline;
+    margin-left: 30px;
+}
+#level .label{
+    float: left;
+}
+*/
