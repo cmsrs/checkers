@@ -782,3 +782,64 @@ logic = (function() {
     };
 
 })();
+
+
+
+
+/*
+//inne wersje metod
+
+//sciezki do terminaIn - mozna odrazu napisac to w metodzie: possibleBeatsMoveArr - wtedy w jenej metodzie obsuzyloby sie bicia
+function path(  node,  pathIn, pathLen, out  ){
+
+    pathIn[pathLen] =  node.data  ;
+    pathLen++;
+
+    if(  typeof node.ch === 'undefined'  ){
+        let tab = [];
+        for(let j=0; j<pathLen; j++  ){
+           tab[j] = pathIn[j];
+        }
+
+        out.push( tab );
+        return out;
+    }
+
+    for( let i in node.ch ){
+        out = logic.path( node.ch[i],  pathIn, pathLen, out  );
+    }
+
+    return out;
+}
+
+function possibleBeatsMoveArr(matrixIn, inn ,enemies, arrBeats, terminateIn){
+
+      matrixIn[inn.beat_y][inn.beat_x] = blank;
+
+      var x = inn.x;
+      var y = inn.y;
+      var value = inn.value;
+
+      if( (draftsman_black === inn.value) ||  (draftsman_white === inn.value)  ){
+        var out = possibleBeatsDraftsman( matrixIn, x, y, value, enemies );
+      }
+      if( (king_black === inn.value) ||  (king_white === inn.value)  ){
+        var out = possibleBeatsKing( matrixIn, x, y, value, enemies , inn.beat_x, inn.beat_y ); //na tym etapie mozna wykluczyc przypadki dwuznacznosci z terminate, sprawdzajac po afterBeats czy sa prosopadle bicia
+      }
+
+      if( !out.length ){
+        //terminateIn.push(inn);
+        return inn;
+      }
+
+      inn.ch = [];
+      for (ii in out){
+        inn.ch.push(out[ii]);
+        possibleBeatsMoveArr(matrixIn, out[ii], enemies, arrBeats, terminateIn);
+        //ch.push(children);
+      }
+      //return  {'arrBeats': arrBeats, 'terminateIn': terminateIn} ;
+      return inn;
+
+}
+*/
