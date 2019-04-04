@@ -1177,8 +1177,6 @@ describe('gameLogicWorker', function() {
       //var initMatrix = logic.initMatrix();
       var value =  logic.getValue(initMatrix, 1, 4);
 
-      //console.log(parseInt(conf.action.blank));
-      //console.log(conf.action.blank);
 
       assert.ok(value === 0 );
       assert.strictEqual( value, conf.action.blank );
