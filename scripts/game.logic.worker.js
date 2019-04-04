@@ -431,15 +431,21 @@ logic = (function() {
       }
 
       var value = getValue(matrix, x, y );
+      var terminateIn = arrBeats.terminateIn;
+
+
+      //komentujac tego if-a - gra nie bedzie zgodna z zadadami - ale mozna podkrecic zmienna max_depth np na 8
+      //patrz 'bug' - to jest nastepny problem
       if( (king_white === value) || (king_black === value)   ){
         var tmpArrBeats = getTmpKingPossibleBeatsByArrBeats(arrBeats.arrBeats);
+
         var terminateInTmp = [];
         terminateInTmp = getTerminateKingBeats( tmpArrBeats, x, y, terminateInTmp );
         var terminateIn = getTerminateKing(terminateInTmp);
-
-      }else{
-        var terminateIn = arrBeats.terminateIn;
       }
+
+
+
 
       var move = 8;
       outt = [];
@@ -454,7 +460,7 @@ logic = (function() {
     }
 
     /**
-    * bierzemy tylko ostatnie mozliwosci klikniecia na dane skosowanie
+    * bierzemy tylko ostatnie mozliwosci klikniecia na dane skosowanie - TODO!!! - mozliwosc zapetlenia!! - patrz testy 'bug'
     */
     function getTerminateKingBeats(  tmpArrBeats, x, y, kingBeats ){
         var findBeat = [];
@@ -651,19 +657,15 @@ logic = (function() {
         maxScoreByBeat = evaluateMaxScoreByBeat( matrix, player );
 
         score = scorePlayer*coef_checker + sumY + player*maxScoreByBeat;
-        // console.log('-----------');
-        // console.log(scorePlayer);
-        // console.log(parseInt(coef_checker));
-        // console.log(sumY);
-        // console.log(score);
-        // console.log('++++++');
 
-        return { score: score, win: win };
-        //return { score: score, win: win, scorePlayer: scorePlayer, coef_checker: coef_checker, sumY: sumY };
+        return { score: score, win: win};
     }
 
     function getBestMatix( matrix_in, player ){
         var tree_ab  = alphaBetaPruning( matrix_in, 0,  -inf, inf, player );
+        //console.log(tree_ab); return false;
+
+
         var  matrix_out = getMatrix(  tree_ab.tree, tree_ab.alphabeta  );
         return  matrix_out
     }
@@ -684,7 +686,7 @@ logic = (function() {
 
         var eval = evaluate( node, player );
         var possibleMoves = logic.possibleMoves(node, player);
-        if(  (eval['win'] !== 0 ) || ( eval['score'] === 0 ) || ( !possibleMoves.length ) || (depth >= max_depth ) ){
+        if(  (eval['win'] !== 0 )   || ( eval['score'] === 0 ) || ( !possibleMoves.length ) || (depth >= max_depth ) ){
             return  { 'alphabeta': eval['score'], 'tree' : null };
         }
 

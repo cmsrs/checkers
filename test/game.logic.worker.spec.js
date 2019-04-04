@@ -82,7 +82,7 @@ describe('gameLogicWorker', function() {
       //testMatrixEmpty[2][3] = conf.action.king_black;
 
       var out = logic.evaluateMaxScoreByBeat(testMatrixEmpty, conf.action.human );
-      assert.equal(out, 11);
+      assert.equal(out, 101);
 
     });
   });
@@ -682,6 +682,38 @@ describe('gameLogicWorker', function() {
     });
 
   });
+
+  describe.skip('bug', function() {
+    it('infinite loop - recursive problem TODO', function(){
+      //testMatrix[testY][testX] = conf.action.king_black;
+
+      var testXX = 7;
+      var testYY = 4;
+
+      testMatrixEmpty[testYY][testXX] = conf.action.king_white;
+
+      testMatrixEmpty[2][7] = conf.action.draftsman_black;
+      testMatrixEmpty[2][5] = conf.action.draftsman_black;
+      testMatrixEmpty[2][3] = conf.action.draftsman_black;
+
+      testMatrixEmpty[4][5] = conf.action.draftsman_black;
+      testMatrixEmpty[5][2] = conf.action.draftsman_black;
+
+      //console.log(testMatrixEmpty);
+      var outKing = logic.possibleBeatsMove(testMatrixEmpty, testXX, testYY);
+      assert.ok(outKing);
+
+      var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp); //TODO - zapetnienie - nieskonczone!
+
+      //console.log('=koniecccc testy=');
+      //console.log(outKing[0]);
+
+
+    });
+  });
+
+
+
 
   describe('possibleBeatsMoveArrWrap(matrix, x, y)', function() {
     it('possible beats arr_move_init', function(){
