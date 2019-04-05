@@ -683,8 +683,8 @@ describe('gameLogicWorker', function() {
 
   });
 
-  describe.skip('bug', function() {
-    it('infinite loop - recursive problem TODO', function(){
+  describe('bugs', function() {
+    it('infinite loop - recursive problem - done!', function(){
       //testMatrix[testY][testX] = conf.action.king_black;
 
       var testXX = 7;
@@ -703,11 +703,7 @@ describe('gameLogicWorker', function() {
       var outKing = logic.possibleBeatsMove(testMatrixEmpty, testXX, testYY);
       assert.ok(outKing);
 
-      var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp); //TODO - zapetnienie - nieskonczone!
-
-      //console.log('=koniecccc testy=');
-      //console.log(outKing[0]);
-
+      var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp); //TODO - tu bylo zapetlnie - zapetnienie - nieskonczone!
 
     });
   });
@@ -1113,6 +1109,54 @@ describe('gameLogicWorker', function() {
       }
       assert.equal(tmp.length, 1);
     });
+
+    it('possible beats king diagonal checkers ex3 (not perfect beats - only two checkers - possible 4)', function(){
+      var x = 7;
+      var y = 0;
+
+      testMatrixEmpty[y][x] = conf.action.king_black;
+      testMatrixEmpty[2][5] = conf.action.draftsman_white;
+
+      testMatrixEmpty[4][5] = conf.action.draftsman_white;
+      testMatrixEmpty[4][1] = conf.action.draftsman_white;
+      testMatrixEmpty[2][1] = conf.action.draftsman_white;
+      testMatrixEmpty[5][4] = conf.action.draftsman_white;
+
+      //console.log(testMatrixEmpty);
+
+      var outKing = logic.possibleBeatsMove(testMatrixEmpty, x, y);
+      assert.equal(outKing.length, 6);
+
+    });
+
+    it('possible beats king diagonal checkers one beats ex3', function(){
+      var x = 7;
+      var y = 0;
+
+      testMatrixEmpty[y][x] = conf.action.king_black;
+      testMatrixEmpty[2][5] = conf.action.draftsman_white;
+
+      //console.log(testMatrixEmpty);
+
+      var outKing = logic.possibleBeatsMove(testMatrixEmpty, x, y);
+      //console.log(outKing); //outKing - tu bedzie 5 bic!!!!
+
+      assert.equal(outKing.length, 5);
+
+
+
+
+      // console.log('----------0--------------');
+      // console.log(outKing[0]);
+      // console.log('----------1--------------');
+      // console.log(outKing[1]);
+
+    });
+
+
+
+
+
 
     it('extreme beats king one checkers', function(){
       var x = 0;

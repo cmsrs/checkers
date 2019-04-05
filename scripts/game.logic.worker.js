@@ -235,12 +235,42 @@ logic = (function() {
       return out;
     }
 
+    function checkIsKingHaveBeat(matrixIn, x, y, value, enemies, signX, signY){
+      var out = [];
+      var move = 6;
+
+      var notBlank = [];
+      var isKingBeat = false;
+      for (var k=0;k<move;k++) {
+        var newX = x + (signX * 2) + (signX * k);
+        var newY = y + (signY * 2) + (signY * k);
+
+        var beatX = x + (signX * 1) + (signX * k);
+        var beatY = y + (signY * 1) + (signY * k);
+
+        var val = getValue(matrixIn, x + (signX * k), y + (signY * k));
+        if( (k > 0) &&  (blank !== val) ){
+          notBlank.push(val);
+        }
+        // if(  (beatX === wasBeatX) &&  (beatY === wasBeatY)  ){ //nie mozna bic do tylu
+        //   break;
+        // }
+
+        if( !notBlank.length && getValue(matrixIn, beatX, beatY) &&  (blank === getValue(matrixIn, newX, newY)) && inArray(matrixIn[beatY][beatX],enemies) ){
+          isKingBeat = true;
+          break;
+        }
+      }
+      return isKingBeat;
+    }
+
 
     function kingBeatOneSite(matrixIn, x, y, value, enemies  , wasBeatX, wasBeatY, signX, signY ) {
       var out = [];
       var move = 6;
 
       var notBlank = [];
+      var movesWithoutJump = [];
       for (var k=0;k<move;k++) {
         var newX = x + (signX * 2) + (signX * k);
         var newY = y + (signY * 2) + (signY * k);
@@ -257,7 +287,7 @@ logic = (function() {
         }
 
         if( !notBlank.length && getValue(matrixIn, beatX, beatY) &&  (blank === getValue(matrixIn, newX, newY)) && inArray(matrixIn[beatY][beatX],enemies) ){
-          out.push({ 'in_x': x, 'in_y': y, 'value': value,  'beat_x': beatX, 'beat_y': beatY, 'x' : newX, 'y': newY });
+          movesWithoutJump.push({ 'in_x': x, 'in_y': y, 'value': value,  'beat_x': beatX, 'beat_y': beatY, 'x' : newX, 'y': newY });
 
           for (var i=1;i<move;i++) {
             var newX = newX+(signX);
@@ -268,10 +298,34 @@ logic = (function() {
             if( blank !== valueNext ){
               break;
             }
-            out.push({ 'in_x': x, 'in_y': y, 'value': value,  'beat_x': beatX, 'beat_y': beatY, 'x' : newX, 'y': newY });
+            movesWithoutJump.push({ 'in_x': x, 'in_y': y, 'value': value,  'beat_x': beatX, 'beat_y': beatY, 'x' : newX, 'y': newY });
+          }
+
+
+          var passibleJumps = [];
+          if(movesWithoutJump.length){
+            for(var m in movesWithoutJump){
+              var kingHaveBeat1 = checkIsKingHaveBeat(matrixIn, movesWithoutJump[m].x, movesWithoutJump[m].y, value, enemies, -1*signX, signY);
+              var kingHaveBeat2 = checkIsKingHaveBeat(matrixIn, movesWithoutJump[m].x, movesWithoutJump[m].y, value, enemies, signX, -1*signY);
+              if( kingHaveBeat1 || kingHaveBeat2 ){
+                passibleJumps.push({ 'in_x': x, 'in_y': y, 'value': value,  'beat_x': beatX, 'beat_y': beatY, 'x' : movesWithoutJump[m].x, 'y': movesWithoutJump[m].y });
+              }
+            }
+          }
+          //return false;
+          var moveToMerge = [];
+          moveToMerge =  passibleJumps.length ? passibleJumps : movesWithoutJump;
+          for(var j in moveToMerge ){
+            out.push(moveToMerge[j]);
           }
         }
       }
+
+
+      //console.log( 'biecie_out', out  );
+
+
+
       return out;
     }
 
@@ -306,6 +360,8 @@ logic = (function() {
         for(var i in site4){
           out.push(site4[i]);
         }
+
+        //console.log( '---------biecie---------------'  );  return false;
       }
 
       return out;
@@ -353,6 +409,8 @@ logic = (function() {
 
       var matrixIn = logic.copyMarix(matrix);
       var beatsMove = logic.possibleBeatsMoveArr(matrixIn, inn, enemies, arrIn, terminateIn);
+      //console.log('---arrBeats return false----'); return false;
+
       return beatsMove;
     }
 
@@ -424,7 +482,7 @@ logic = (function() {
 
     function possibleBeatsMove(matrix, x, y){
       var arrBeats = possibleBeatsMoveArrWrap(matrix, x, y);
-      //console.log('arrBeats', arrBeats);
+
 
       if(!arrBeats  || !arrBeats.arrBeats.length){
         return false;
@@ -436,6 +494,7 @@ logic = (function() {
 
       //komentujac tego if-a - gra nie bedzie zgodna z zadadami - ale mozna podkrecic zmienna max_depth np na 8
       //patrz 'bug' - to jest nastepny problem
+      /*
       if( (king_white === value) || (king_black === value)   ){
         var tmpArrBeats = getTmpKingPossibleBeatsByArrBeats(arrBeats.arrBeats);
 
@@ -443,6 +502,8 @@ logic = (function() {
         terminateInTmp = getTerminateKingBeats( tmpArrBeats, x, y, terminateInTmp );
         var terminateIn = getTerminateKing(terminateInTmp);
       }
+      */
+
 
 
 
@@ -625,9 +686,15 @@ logic = (function() {
         var scorePlayer = 0;
         var scoreEnemy = 0;
         var sumY = 0;
+        var sumX = 0;
         for (var y=0;y<rows;y++) {
           for (var x=0;x<cols;x++) {
             var value = getValue(matrix, x, y);
+
+            // if( ((x === 0) ||  (x === cols-1))  &&  (  (draftsman_white === value) || (draftsman_black === value)  ) ){
+            //   sumX = 2*value;
+            // }
+
             if( (player === human) &&  ( draftsman_white === value  ) ){
               //sumY += Math.abs(y-(cols-1));
               sumY += getYForHuman(y);
@@ -635,6 +702,7 @@ logic = (function() {
             if( (player === comp) &&  ( draftsman_black === value  ) ){
               sumY += -y;
             }
+
             if( inArray(value,playerValues) ){
               scorePlayer += value;
             }
@@ -656,7 +724,7 @@ logic = (function() {
         //console.log( ' player=' + player + ' sumY='+sumY );
         maxScoreByBeat = evaluateMaxScoreByBeat( matrix, player );
 
-        score = scorePlayer*coef_checker + sumY + player*maxScoreByBeat;
+        score = scorePlayer*coef_checker + sumY + sumX + player*maxScoreByBeat;
 
         return { score: score, win: win};
     }
