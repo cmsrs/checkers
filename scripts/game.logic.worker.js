@@ -736,13 +736,13 @@ logic = (function() {
     function evaluateY(y){
       var evalY = 0;
       if(y===0){
-        evalY = 10;
+        evalY = 4;
       }else if(  1<=y<=2 ){
         evalY = 2;
       }else if( 3<=y<=4 ){
-        evalY = 4;
+        evalY = 2;
       }else if( 5<=y<=6 ){
-        evalY = 8;
+        evalY = 2;
       }else if( y===7 ){
         evalY = 10;
       }
@@ -767,7 +767,7 @@ logic = (function() {
             var value = getValue(matrix, x, y);
 
             if( ((x === 0) ||  (x === cols-1))  &&  (  (draftsman_white === value) || (draftsman_black === value)  ) ){
-               sumX = 2*value;
+               sumX += 2*value;
             }
 
 
@@ -801,25 +801,19 @@ logic = (function() {
           win = comp;
         }
 
-        //console.log( ' player=' + player + ' sumY='+sumY );
-        var maxScoreByBeat = evaluateMaxScoreByBeat( matrix, player );
-        var maxScoreByBeatEnemy = evaluateMaxScoreByBeat( matrix, -1*player );
+        // var maxScoreByBeatEnemy = evaluateMaxScoreByBeat( matrix, -1*player );
+        // var maxScoreByBeat = 0;
+        // if( !maxScoreByBeatEnemy ){
+        //   var maxScoreByBeat = evaluateMaxScoreByBeat( matrix, player ); //ma to sens jesli samego siebie nie bija patrz test: diagnose black move real3 example
+        // }
 
-        //console.log( 'maxScoreByBeat', maxScoreByBeat);
-        //console.log( 'maxScoreByBeatEnemy', maxScoreByBeatEnemy );
-
-
-        score = scorePlayer*coef_checker + player*sumY + sumX + player*maxScoreByBeat*coef_checker - player*maxScoreByBeatEnemy*coef_checker;
-
-        //console.log(scorePlayer,maxScoreByBeat, sumY, maxScoreByBeatEnemy);
+        var score = scorePlayer*coef_checker + player*sumY+ player*sumX; // + player*maxScoreByBeat*coef_checker - player*maxScoreByBeatEnemy*coef_checker*10;
 
         return { score: score, win: win};
     }
 
     function getBestMatix( matrix_in, player ){
         var tree_ab  = alphaBetaPruning( matrix_in, 0,  -inf, inf, player );
-        //console.log(tree_ab); return false;
-
 
         var  matrix_out = getMatrix(  tree_ab.tree, tree_ab.alphabeta  );
         return  matrix_out
@@ -830,7 +824,7 @@ logic = (function() {
 
         for( var i=0; i<tree_len; i++ ){
             if( tree[i].alphabeta == alphabeta  ){
-                return tree[i]; //.matrix;
+                return tree[i];
             }
         }
         return false;
@@ -841,7 +835,7 @@ logic = (function() {
 
         var eval = evaluate( node, player );
         var possibleMoves = logic.possibleMoves(node, player);
-        if(  (eval['win'] !== 0 )   || ( eval['score'] === 0 ) || ( !possibleMoves.length ) || (depth >= max_depth ) ){
+        if(  (eval['win'] !== 0 )   || ( !possibleMoves.length ) || (depth >= max_depth ) ){ // || ( eval['score'] === 0 )
             return  { 'alphabeta': eval['score'], 'tree' : null };
         }
 
@@ -849,37 +843,45 @@ logic = (function() {
         depth++;
 
 
-        if( player == human ){ //maximizingPlayer
+        if( player === human ){ //maximizingPlayer human..?
             var tree = [];
+            var value = -1*inf;
+            //console.log('________22222222');
             for( var i=0;  i<children.length;  i++ ){
                 tree[i] = {};
                 tree[i].matrix = children[i].matrix;
                 tree[i].move = children[i].move;
+
                 //var tree_children  = alphaBetaPruning( children[i].matrix, depth, alpha, beta, -player  );
-                var tree_children  = alphaBetaPruning( children[i].matrix, depth, alpha, beta, comp  );
-                var alpha = ( tree_children['alphabeta'] > alpha  ) ?  tree_children['alphabeta'] : alpha;
+                var tree_children  = alphaBetaPruning( children[i].matrix, depth, alpha, beta, -player  );
+                value = Math.max(value, tree_children['alphabeta']);
+                alpha =  Math.max(alpha, value);
 
                 tree[i].alphabeta = alpha;
                 if( beta <= alpha ){
                     break;
                 }
             }
-            return {  'alphabeta':  alpha, 'tree': tree };
+            return { 'alphabeta':  value, 'tree': tree  };
         }else{
             var tree = [];
+            var value = inf;
             for( var i=0;  i<children.length;  i++ ){
                 tree[i] = {};
                 tree[i].matrix = children[i].matrix;
                 tree[i].move = children[i].move;
-                var tree_children = alphaBetaPruning(  children[i].matrix, depth, alpha, beta, human );
-                var beta = ( tree_children['alphabeta'] < beta  ) ?  tree_children['alphabeta'] :  beta;
+
+                var tree_children = alphaBetaPruning(  children[i].matrix, depth, alpha, beta, -player );
+                //var beta = ( tree_children['alphabeta'] < beta  ) ?  tree_children['alphabeta'] :  beta;
+                value = Math.min(value, tree_children['alphabeta']);
+                beta = Math.min(beta, value);
 
                 tree[i].alphabeta = beta;
                 if( beta <= alpha ){
                     break;
                 }
             }
-            return {  'alphabeta':  beta, 'tree': tree };
+            return {  'alphabeta': value, 'tree': tree };
         }
     }
 

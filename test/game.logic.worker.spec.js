@@ -749,6 +749,29 @@ describe('gameLogicWorker', function() {
       var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp); //TODO - tu bylo zapetlnie - zapetnienie - nieskonczone!
 
     });
+
+    it('mandatory beat by checkers - it seems ok', function(){
+      testMatrixEmpty[3][0] = conf.action.draftsman_white;
+      testMatrixEmpty[3][2] = conf.action.draftsman_white;
+      testMatrixEmpty[5][0] = conf.action.draftsman_white;
+      testMatrixEmpty[5][4] = conf.action.draftsman_white;
+      testMatrixEmpty[6][5] = conf.action.draftsman_white;
+      testMatrixEmpty[0][5] = conf.action.king_white;
+
+      testMatrixEmpty[1][2] = conf.action.draftsman_black;
+      testMatrixEmpty[0][7] = conf.action.draftsman_black;
+      testMatrixEmpty[1][4] = conf.action.draftsman_black;
+      testMatrixEmpty[2][3] = conf.action.draftsman_black;
+      testMatrixEmpty[4][7] = conf.action.draftsman_black;
+      testMatrixEmpty[5][6] = conf.action.king_black;
+
+      //console.log(testMatrixEmpty);
+      var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+      //console.log(out);
+
+
+    });
+
   });
 
 
@@ -837,11 +860,62 @@ describe('gameLogicWorker', function() {
       }
 
       var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+
+
       //console.log('===best=====');
       //console.log(out);
+      assert.notEqual(out.matrix[0][5], conf.action.blank);
 
 
     });
+
+
+    it('diagnose black move real3 example', function(){
+      testMatrixEmpty[0][5] = conf.action.draftsman_black;
+      testMatrixEmpty[0][7] = conf.action.draftsman_black;
+
+      testMatrixEmpty[3][0] = conf.action.draftsman_black;
+      testMatrixEmpty[3][2] = conf.action.draftsman_black;
+      testMatrixEmpty[3][4] = conf.action.draftsman_black;
+
+      testMatrixEmpty[2][7] = conf.action.draftsman_white;
+      testMatrixEmpty[5][0] = conf.action.draftsman_white;
+      testMatrixEmpty[5][2] = conf.action.draftsman_white;
+      testMatrixEmpty[5][4] = conf.action.draftsman_white;
+      testMatrixEmpty[5][6] = conf.action.draftsman_white;
+
+
+
+      //console.log(testMatrixEmpty);
+
+
+      var possibleMoves  =logic.possibleMoves(testMatrixEmpty, conf.action.comp);
+      //console.log(possibleMoves);
+
+      var matrixPossibleMoves  =logic.getMatrixByPossibleMoves(testMatrixEmpty, conf.action.comp, possibleMoves);
+      //console.log(matrixPossibleMoves);
+
+
+      for(var i in  matrixPossibleMoves){
+        //console.log('========');
+        //console.log(matrixPossibleMoves[i]);
+        var eval = logic.evaluate( matrixPossibleMoves[i].matrix, conf.action.comp );
+        //console.log('eval_comp', eval);
+        var eval_human = logic.evaluate( matrixPossibleMoves[i].matrix, conf.action.human );
+        //console.log('eval_human', eval_human);
+      }
+      //console.log('===bestMatrix================================================================');
+      var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+      //console.log('===best=====');
+      //console.log(out);
+
+      assert.notEqual(out.matrix[4][1], conf.action.draftsman_black);
+      assert.notEqual(out.matrix[4][3], conf.action.draftsman_black);
+      assert.notEqual(out.matrix[4][5], conf.action.draftsman_black);
+
+
+    });
+
 
 
 

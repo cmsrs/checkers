@@ -461,13 +461,13 @@ display = (function() {
         }
 
         for(var i=1; i<=ttt.action.max_level; i++ ){
-            var lCanvas = createLevelCanvas( i );
+            var lCanvas = createLevelCanvas( levelByNo(i) );
             lCanvas.id = 'level_'+i;
             lCanvas.addEventListener("click", function(e){
                 boardElement.removeChild(canvas);
                 divWrapLevel.removeChild(divLevel);
                 var level = parseInt( this.id.match( /\d+$/ ) );
-                ttt.action.max_depth = level;
+                ttt.action.max_depth = levelByNo( level );
                 worker.terminate();
                 initialize( ttt  );
             }, false);
@@ -475,6 +475,18 @@ display = (function() {
             divLevel.appendChild(lCanvas);
         }
         worker.addEventListener('error', onError, false);
+    }
+    
+    function levelByNo( no ){
+      if( no === 3 ){
+        return 8;
+      }
+      if( no === 2 ){
+        return 4;
+      }
+      if( no === 1 ){
+        return 2;
+      }
     }
 
     return {
