@@ -88,7 +88,6 @@ logic = (function() {
       var out = [];
       for(i in  possibleMoves){
         var possibleMove = possibleMoves[i];
-        //console.log(possibleMove);
         if(possibleMove.isMandatoryBeats){
           out.push( {'x': possibleMove.x, 'y': possibleMove.y, 'value':possibleMove.value  });
         }
@@ -321,11 +320,6 @@ logic = (function() {
         }
       }
 
-
-      //console.log( 'biecie_out', out  );
-
-
-
       return out;
     }
 
@@ -360,8 +354,6 @@ logic = (function() {
         for(var i in site4){
           out.push(site4[i]);
         }
-
-        //console.log( '---------biecie---------------'  );  return false;
       }
 
       return out;
@@ -396,20 +388,86 @@ logic = (function() {
     }
 
 
-    function possibleBeatsMoveArrWrap(matrix, x, y){
+    /**
+    * Nowa wersja
+    */
+    function possibleBeatsMovePath(matrixIn, inn ,enemies, pathIn, pathLen, paths){
+
+      pathIn[pathLen] =  inn;
+      pathLen++;
+
+      matrixIn[inn.beat_y][inn.beat_x] = blank;
+
+      var x = inn.x;
+      var y = inn.y;
+      var value = inn.value;
+
+      if( (draftsman_black === inn.value) ||  (draftsman_white === inn.value)  ){
+        var out = possibleBeatsDraftsman( matrixIn, x, y, value, enemies );
+      }
+      if( (king_black === inn.value) ||  (king_white === inn.value)  ){
+        var out = possibleBeatsKing( matrixIn, x, y, value, enemies , inn.beat_x, inn.beat_y );
+      }
+
+      if( !out.length ){
+        var beat = [];
+        for(let j=1; j<pathLen; j++  ){
+           beat.push(pathIn[j]);
+        }
+        if( !beat.length ){
+          return false;
+        }
+
+        var path = { 'x': x, 'y': y };
+        path.beats = [];
+        path.beats = beat;
+
+        paths.push( path );
+        return paths;
+      }
+
+      for (ii in out){
+        paths = possibleBeatsMovePath(matrixIn, out[ii], enemies, pathIn, pathLen, paths);
+      }
+      return paths;
+    }
+
+/*
+    function possibleBeatsMove_depraciate(matrix, x, y){
+      var arrBeats = possibleBeatsMoveArrWrap(matrix, x, y);
+
+
+      if(!arrBeats  || !arrBeats.arrBeats.length){
+        return false;
+      }
+    function possibleBeatsMoveArrWrap_depreciate(matrix, x, y){
+*/
+
+
+    function possibleBeatsMove(matrix, x, y){
       var value = logic.getValue(matrix, x, y);
       if(!value){
         return false;
       }
 
       enemies = logic.getEnemiesByValue(value);
-      var arrIn = [];
-      var terminateIn = [];
+
+      //var arrIn = [];
+      //var terminateIn = [];
+      var pathIn = [];
+      var pathLen = 0;
+      var paths = [];
+
       var inn = {'x': x, 'y' : y, 'value': value,  'beat_x': x, 'beat_y': y };
 
       var matrixIn = logic.copyMarix(matrix);
-      var beatsMove = logic.possibleBeatsMoveArr(matrixIn, inn, enemies, arrIn, terminateIn);
-      //console.log('---arrBeats return false----'); return false;
+      //var beatsMove = logic.possibleBeatsMoveArr(matrixIn, inn, enemies, arrIn, terminateIn);
+      var beatsMove = possibleBeatsMovePath(matrixIn, inn, enemies, pathIn, pathLen, paths);
+
+
+      // console.log('---arrBeats return false----', beatsMove );
+      //console.log(beatsMove);
+      // return false;
 
       return beatsMove;
     }
@@ -480,7 +538,7 @@ logic = (function() {
     }
 
 
-    function possibleBeatsMove(matrix, x, y){
+    function possibleBeatsMove_depraciate(matrix, x, y){
       var arrBeats = possibleBeatsMoveArrWrap(matrix, x, y);
 
 
@@ -675,6 +733,23 @@ logic = (function() {
       return Math.abs(y-(rows-1));
     }
 
+    function evaluateY(y){
+      var evalY = 0;
+      if(y===0){
+        evalY = 10;
+      }else if(  1<=y<=2 ){
+        evalY = 2;
+      }else if( 3<=y<=4 ){
+        evalY = 4;
+      }else if( 5<=y<=6 ){
+        evalY = 8;
+      }else if( y===7 ){
+        evalY = 10;
+      }
+
+      return evalY;
+    }
+
     function evaluate( matrix, player ){
 
         var score = 0;
@@ -691,16 +766,21 @@ logic = (function() {
           for (var x=0;x<cols;x++) {
             var value = getValue(matrix, x, y);
 
-            // if( ((x === 0) ||  (x === cols-1))  &&  (  (draftsman_white === value) || (draftsman_black === value)  ) ){
-            //   sumX = 2*value;
-            // }
+            if( ((x === 0) ||  (x === cols-1))  &&  (  (draftsman_white === value) || (draftsman_black === value)  ) ){
+               sumX = 2*value;
+            }
+
 
             if( (player === human) &&  ( draftsman_white === value  ) ){
               //sumY += Math.abs(y-(cols-1));
-              sumY += getYForHuman(y);
+              var yTmp = getYForHuman(y);
+              sumY += evaluateY(yTmp);
+              //sumY += getYForHuman(y);
             }
             if( (player === comp) &&  ( draftsman_black === value  ) ){
-              sumY += -y;
+              var yTmp = y;
+              sumY += evaluateY(yTmp);
+              //sumY += -y;
             }
 
             if( inArray(value,playerValues) ){
@@ -722,9 +802,16 @@ logic = (function() {
         }
 
         //console.log( ' player=' + player + ' sumY='+sumY );
-        maxScoreByBeat = evaluateMaxScoreByBeat( matrix, player );
+        var maxScoreByBeat = evaluateMaxScoreByBeat( matrix, player );
+        var maxScoreByBeatEnemy = evaluateMaxScoreByBeat( matrix, -1*player );
 
-        score = scorePlayer*coef_checker + sumY + sumX + player*maxScoreByBeat;
+        //console.log( 'maxScoreByBeat', maxScoreByBeat);
+        //console.log( 'maxScoreByBeatEnemy', maxScoreByBeatEnemy );
+
+
+        score = scorePlayer*coef_checker + player*sumY + sumX + player*maxScoreByBeat*coef_checker - player*maxScoreByBeatEnemy*coef_checker;
+
+        //console.log(scorePlayer,maxScoreByBeat, sumY, maxScoreByBeatEnemy);
 
         return { score: score, win: win};
     }
@@ -762,13 +849,14 @@ logic = (function() {
         depth++;
 
 
-        if( player == human ){
+        if( player == human ){ //maximizingPlayer
             var tree = [];
             for( var i=0;  i<children.length;  i++ ){
                 tree[i] = {};
                 tree[i].matrix = children[i].matrix;
                 tree[i].move = children[i].move;
-                var tree_children  = alphaBetaPruning( children[i].matrix, depth, alpha, beta, -player  );
+                //var tree_children  = alphaBetaPruning( children[i].matrix, depth, alpha, beta, -player  );
+                var tree_children  = alphaBetaPruning( children[i].matrix, depth, alpha, beta, comp  );
                 var alpha = ( tree_children['alphabeta'] > alpha  ) ?  tree_children['alphabeta'] : alpha;
 
                 tree[i].alphabeta = alpha;
@@ -783,7 +871,7 @@ logic = (function() {
                 tree[i] = {};
                 tree[i].matrix = children[i].matrix;
                 tree[i].move = children[i].move;
-                var tree_children = alphaBetaPruning(  children[i].matrix, depth, alpha, beta, -player );
+                var tree_children = alphaBetaPruning(  children[i].matrix, depth, alpha, beta, human );
                 var beta = ( tree_children['alphabeta'] < beta  ) ?  tree_children['alphabeta'] :  beta;
 
                 tree[i].alphabeta = beta;
@@ -832,7 +920,7 @@ logic = (function() {
         possibleMove : possibleMove,
         possibleOneStepMove : possibleOneStepMove,
         possibleBeatsMoveArr: possibleBeatsMoveArr,
-        possibleBeatsMoveArrWrap: possibleBeatsMoveArrWrap,
+        //possibleBeatsMoveArrWrap: possibleBeatsMoveArrWrap,
         possibleBeatsMove : possibleBeatsMove,
         getValue : getValue,
         copyMarix : copyMarix,
@@ -850,64 +938,3 @@ logic = (function() {
     };
 
 })();
-
-
-
-
-/*
-//inne wersje metod
-
-//sciezki do terminaIn - mozna odrazu napisac to w metodzie: possibleBeatsMoveArr - wtedy w jenej metodzie obsuzyloby sie bicia
-function path(  node,  pathIn, pathLen, out  ){
-
-    pathIn[pathLen] =  node.data  ;
-    pathLen++;
-
-    if(  typeof node.ch === 'undefined'  ){
-        let tab = [];
-        for(let j=0; j<pathLen; j++  ){
-           tab[j] = pathIn[j];
-        }
-
-        out.push( tab );
-        return out;
-    }
-
-    for( let i in node.ch ){
-        out = logic.path( node.ch[i],  pathIn, pathLen, out  );
-    }
-
-    return out;
-}
-
-function possibleBeatsMoveArr(matrixIn, inn ,enemies, arrBeats, terminateIn){
-
-      matrixIn[inn.beat_y][inn.beat_x] = blank;
-
-      var x = inn.x;
-      var y = inn.y;
-      var value = inn.value;
-
-      if( (draftsman_black === inn.value) ||  (draftsman_white === inn.value)  ){
-        var out = possibleBeatsDraftsman( matrixIn, x, y, value, enemies );
-      }
-      if( (king_black === inn.value) ||  (king_white === inn.value)  ){
-        var out = possibleBeatsKing( matrixIn, x, y, value, enemies , inn.beat_x, inn.beat_y ); //na tym etapie mozna wykluczyc przypadki dwuznacznosci z terminate, sprawdzajac po afterBeats czy sa prosopadle bicia
-      }
-
-      if( !out.length ){
-        //terminateIn.push(inn);
-        return inn;
-      }
-
-      inn.ch = [];
-      for (ii in out){
-        inn.ch.push(out[ii]);
-        possibleBeatsMoveArr(matrixIn, out[ii], enemies, arrBeats, terminateIn);
-        //ch.push(children);
-      }
-      //return  {'arrBeats': arrBeats, 'terminateIn': terminateIn} ;
-      return inn;
-
-}
-*/
