@@ -55,7 +55,7 @@ config = (function() {
             cols : 8,
             coef_checker : 100,
             max_level : 3,
-            max_depth : 8,
+            max_depth : 2,
             inf : 1000000,
             draftsman_white : 1,
             king_white : 900,

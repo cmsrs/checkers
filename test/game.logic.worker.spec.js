@@ -235,11 +235,16 @@ describe('gameLogicWorker', function() {
 
         //console.log(testMatrixEmpty);
         var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
-        assert.equal(out.matrix[4][5], conf.action.comp);
+        //console.log(out);
+
+
+        assert.equal(out.matrix[4][5], conf.action.comp); // rozna w zaleznosci od poziomu lub [4][1]
 
         testMatrixEmpty[5][6]  = conf.action.draftsman_black;
+        //console.log(testMatrixEmpty);
         var out2 = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
-        assert.equal(out2.matrix[4][5], conf.action.comp);
+        //console.log(out);
+        assert.equal(out2.matrix[4][5], conf.action.comp); // rozna w zaleznosci od poziomu lub [4][1]
 
         //console.log(out2);
     });
@@ -929,195 +934,76 @@ describe('gameLogicWorker', function() {
       assert.notEqual(out.matrix[4][3], conf.action.draftsman_black);
       assert.notEqual(out.matrix[4][5], conf.action.draftsman_black);
 
-
     });
 
 
 
+    it('diagnose black move real4 example', function(){
+      testMatrixEmpty[0][1] = conf.action.draftsman_black;
+      testMatrixEmpty[0][3] = conf.action.draftsman_black;
+      testMatrixEmpty[0][5] = conf.action.draftsman_black;
+      testMatrixEmpty[0][7] = conf.action.draftsman_black;
+
+      testMatrixEmpty[1][2] = conf.action.draftsman_black;
+      testMatrixEmpty[1][6] = conf.action.draftsman_black;
+
+      testMatrixEmpty[2][1] = conf.action.draftsman_black;
+      testMatrixEmpty[2][3] = conf.action.draftsman_black;
+
+      testMatrixEmpty[3][2] = conf.action.draftsman_black;
+      testMatrixEmpty[6][5] = conf.action.draftsman_black;
 
 
+      testMatrixEmpty[2][7] = conf.action.draftsman_white;
 
-  });
-
-
-
-  describe.skip('depreciate  possibleBeatsMoveArrWrap(matrix, x, y)', function() {
-    it('possible beats arr_move_init', function(){
-      //var initMatrix = logic.initMatrix();
-      //var out = logic.possibleBeatsMove(initMatrix, 1, 2);
-      var arrBeats = logic.possibleBeatsMoveArrWrap(testMatrixEmpty, 1, 2);
-      assert.equal(arrBeats, false);
-    });
-
-    it('possible beats move arr_test1', function(){
-
-      var x = 2;
-      var y = 3;
-      testMatrixEmpty[y][x] = conf.action.draftsman_black;
-      testMatrixEmpty[2][1] = conf.action.draftsman_white;
-      testMatrixEmpty[2][3] = conf.action.draftsman_white;
-      testMatrixEmpty[4][3] = conf.action.draftsman_white;
-      testMatrixEmpty[4][1] = conf.action.draftsman_white;
-
-      //console.log(testMatrixEmpty);
-      var arrBeats = logic.possibleBeatsMoveArrWrap(testMatrixEmpty, x, y);
-      //console.log(arrBeats);
-
-      var expected =
-      [ { in_x: 2, in_y: 3, value: -1, beat_x: 1, beat_y: 2, x: 0, y: 1 },
-        { in_x: 2, in_y: 3, value: -1, beat_x: 3, beat_y: 2, x: 4, y: 1 },
-        { in_x: 2, in_y: 3, value: -1, beat_x: 3, beat_y: 4, x: 4, y: 5 },
-        { in_x: 2, in_y: 3, value: -1, beat_x: 1, beat_y: 4, x: 0, y: 5 } ];
-
-      assert.equal(arrBeats.arrBeats.length, 4);
-      assert.equal(arrBeats.terminateIn.length, 4);
-
-      assert.deepEqual(arrBeats.arrBeats, expected);
-      assert.deepEqual(arrBeats.terminateIn, expected);
-    });
-
-    it('possible beats move arr_test2', function(){
-
-      //console.log(testMatrix);
-      var arrBeats = logic.possibleBeatsMoveArrWrap(testMatrix, testX, testY);
-      //console.log(arrBeats);
-
-      assert.equal(arrBeats.terminateIn.length, 4);
-      assert.equal(arrBeats.arrBeats.length, 6);
-
-    });
-
-    it('possible_move_arr_round', function(){ //nie dokonca dobrze pokazuje wynik - ale pozniej sie wybierze i tak lepszy wynik
-      var testX =3; testY = 2;
-      testMatrix[2][3] = conf.action.draftsman_black;
-      testMatrix[1][2] = conf.action.blank;
-      testMatrix[1][4] = conf.action.blank;
-      testMatrix[5][2] = conf.action.draftsman_white;
-      //testMatrix[5][4] = conf.action.blank;
-      //console.log(testMatrix);
-
-      var arrBeats = logic.possibleBeatsMoveArrWrap(testMatrix, testX, testY);
-      //console.log(arrBeats);
-      assert.equal(arrBeats.arrBeats.length, 5); //jedna nadmiarowa - bo zatacvza kolo
-    });
+      testMatrixEmpty[4][5] = conf.action.draftsman_white;
+      testMatrixEmpty[4][7] = conf.action.draftsman_white;
+      testMatrixEmpty[5][0] = conf.action.draftsman_white;
 
 
-
-    it('arr_round_test2', function(){ //todo - przypadek mocno wymyslony - raczej malo prawdopodobny w grze
-      testMatrix[5][2] = conf.action.draftsman_white; //to dodalem - tworzymy petle
-      testMatrix[1][2] = conf.action.blank;
-      //console.log(testMatrix);
-
-      var arrBeats = logic.possibleBeatsMoveArrWrap(testMatrix, testX, testY);
-      //console.log(arrBeats);
-
-      assert.equal(arrBeats.arrBeats.length, 7); //jedna nadmiarowa - bo zatacvza kolo
-
-    });
-
-    it('possible beats king', function(){
-
-      var x = 7;
-      var y = 0;
-
-      var x2 = 3;
-      var y2 = 4;
-
-
-      testMatrixEmpty[y][x] = conf.action.king_black;
-      testMatrixEmpty[2][5] = conf.action.draftsman_white;
-      testMatrixEmpty[y2][x2] = conf.action.king_black;
-      testMatrixEmpty[4][5] = conf.action.king_white;
-      testMatrixEmpty[6][5] = conf.action.draftsman_white;
-
-      testMatrixEmpty[4][1] = conf.action.draftsman_white;
-      testMatrixEmpty[2][1] = conf.action.draftsman_white;
-
-      //testMatrixEmpty[2][3] = conf.action.draftsman_white;//zatacza kolo!!
-
-      //console.log(testMatrixEmpty);
-      var arrBeats = logic.possibleBeatsMoveArrWrap(testMatrixEmpty, x2, y2); //nie mozna bic do tylu damka
-      //console.log(arrBeats);
-
-      assert.equal(arrBeats.arrBeats.length, 3);
-      assert.equal(arrBeats.terminateIn.length, 3);
-
-      //assert.ok(arrBeats.arrBeats.length);
-      //assert.ok(arrBeats.terminateIn.length);
-
-
-
-      //console.log(testMatrixEmpty);
-
-
-    });
-
-    it('king beats ok', function(){
-      var x = 7;
-      var y = 0;
-
-      var x2 = 3;
-      var y2 = 4;
-
-
-      testMatrixEmpty[y][x] = conf.action.king_black;
-      testMatrixEmpty[2][5] = conf.action.draftsman_white;
-      testMatrixEmpty[y2][x2] = conf.action.king_black;
-      testMatrixEmpty[4][5] = conf.action.king_white;
-      testMatrixEmpty[6][5] = conf.action.draftsman_white;
-
-      testMatrixEmpty[4][1] = conf.action.draftsman_white;
-      testMatrixEmpty[2][1] = conf.action.draftsman_white;
-
-      //console.log(testMatrixEmpty);
-      //to dziala ok - dobry przypadek testowy
-      var arrBeats = logic.possibleBeatsMoveArrWrap(testMatrixEmpty, x, y);
-      //console.log(arrBeats);
-
-      //assert.equal(arrBeats.arrBeats.length,5); //bijemy wszystkie pionki przeciwnika - a jest ich 5
-      //assert.equal(arrBeats.terminateIn.length,2);  //bijemy je za jednym razem - powinno byc 2 - terminate zle dziala dla damek - dlatego jest osobna na to logika
-
-
-      var beats = logic.possibleBeatsMove(testMatrixEmpty, x, y);
-      assert.equal(beats.length,2);
-
-      //console.log(beats);
-
-    });
-
-
-    it('possible beats diagonal king', function(){
-      var x = 7;
-      var y = 0;
-      testMatrixEmpty[y][x] = conf.action.king_black;
       testMatrixEmpty[6][1] = conf.action.draftsman_white;
-      var arrBeats = logic.possibleBeatsMoveArrWrap(testMatrixEmpty, x, y);
+      testMatrixEmpty[6][3] = conf.action.draftsman_white;
+      testMatrixEmpty[6][7] = conf.action.draftsman_white;
 
-      assert.equal(arrBeats.arrBeats.length, 1);
 
-      testMatrixEmpty[3][4] = conf.action.draftsman_black;
-      var arrBeats = logic.possibleBeatsMoveArrWrap(testMatrixEmpty, x, y);
-      assert.ok(!arrBeats.arrBeats.length);
-
-      testMatrixEmpty[3][4] = conf.action.king_white;
+      testMatrixEmpty[7][0] = conf.action.draftsman_white;
+      testMatrixEmpty[7][2] = conf.action.draftsman_white;
+      testMatrixEmpty[7][4] = conf.action.draftsman_white;
 
       //console.log(testMatrixEmpty);
-      var arrBeats = logic.possibleBeatsMoveArrWrap(testMatrixEmpty, x, y);
-      //console.log(arrBeats);
 
-      assert.equal(arrBeats.arrBeats.length, 3);
 
+      var possibleMoves  =logic.possibleMoves(testMatrixEmpty, conf.action.comp);
+      //console.log(possibleMoves);
+
+      var matrixPossibleMoves  =logic.getMatrixByPossibleMoves(testMatrixEmpty, conf.action.comp, possibleMoves);
+      //console.log(matrixPossibleMoves);
+
+
+      for(var i in  matrixPossibleMoves){
+        //console.log('========');
+        //console.log(matrixPossibleMoves[i]);
+        var eval = logic.evaluate( matrixPossibleMoves[i].matrix, conf.action.comp );
+        //console.log('eval_comp', eval);
+        var eval_human = logic.evaluate( matrixPossibleMoves[i].matrix, conf.action.human );
+        //console.log('eval_human', eval_human);
+      }
+      //console.log('===bestMatrix================================================================');
+      var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+      //console.log('===best=====');
+      //console.log(out);
+
+      assert.equal(out.matrix[7][6], conf.action.king_black ); //na max_depth : 2, - jest ok //na 8 poziomie zle sie wyswietla
+      //assert.notEqual(out.matrix[4][3], conf.action.draftsman_black);
+      //assert.notEqual(out.matrix[4][5], conf.action.draftsman_black);
 
     });
 
+
+
   });
-
-
 
   describe('possibleBeatsMove(matrix, x, y)', function() {
-
-
-
     it('possible beats possible_beats_move_init', function(){
       //var initMatrix = logic.initMatrix();
 

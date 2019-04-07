@@ -359,35 +359,6 @@ logic = (function() {
       return out;
     }
 
-
-
-    function possibleBeatsMoveArr(matrixIn, inn ,enemies, arrBeats, terminateIn){
-
-      matrixIn[inn.beat_y][inn.beat_x] = blank;
-
-      var x = inn.x;
-      var y = inn.y;
-      var value = inn.value;
-
-      if( (draftsman_black === inn.value) ||  (draftsman_white === inn.value)  ){
-        var out = possibleBeatsDraftsman( matrixIn, x, y, value, enemies );
-      }
-      if( (king_black === inn.value) ||  (king_white === inn.value)  ){
-        var out = possibleBeatsKing( matrixIn, x, y, value, enemies , inn.beat_x, inn.beat_y );
-      }
-
-      if( !out.length ){
-        terminateIn.push(inn);
-      }
-
-      for (ii in out){
-        arrBeats.push(out[ii]);
-        var children = possibleBeatsMoveArr(matrixIn, out[ii], enemies, arrBeats, terminateIn);
-      }
-      return  {'arrBeats': arrBeats, 'terminateIn': terminateIn} ;
-    }
-
-
     /**
     * Nowa wersja
     */
@@ -432,17 +403,6 @@ logic = (function() {
       return paths;
     }
 
-/*
-    function possibleBeatsMove_depraciate(matrix, x, y){
-      var arrBeats = possibleBeatsMoveArrWrap(matrix, x, y);
-
-
-      if(!arrBeats  || !arrBeats.arrBeats.length){
-        return false;
-      }
-    function possibleBeatsMoveArrWrap_depreciate(matrix, x, y){
-*/
-
 
     function possibleBeatsMove(matrix, x, y){
       var value = logic.getValue(matrix, x, y);
@@ -470,163 +430,6 @@ logic = (function() {
       // return false;
 
       return beatsMove;
-    }
-
-    function inArrayBeats(needle, haystack) {
-        var length = haystack.length;
-        for(var i = 0; i < length; i++) {
-            if( (haystack[i].in_x === needle.in_x) &&
-                (haystack[i].in_y === needle.in_y) &&
-                (haystack[i].beat_x === needle.beat_x ) &&
-                (haystack[i].beat_y === needle.beat_y ) &&
-                (haystack[i].value === needle.value ) ){
-              return true;
-            }
-        }
-        return false;
-    }
-
-
-    /**
-    * damka po biciu moze zuszyc sie w pare miejsc
-    */
-    function getTmpKingPossibleBeatsByArrBeats(arrBeats) {
-        //console.log('arrBeats',   arrBeats);
-        beats = [];
-        for(var i in  arrBeats){
-          var beatItem = { 'in_x': arrBeats[i].in_x, 'in_y': arrBeats[i].in_y, 'beat_x':  arrBeats[i].beat_x, 'beat_y': arrBeats[i].beat_y, 'value': arrBeats[i].value  };
-          if( !inArrayBeats(beatItem, beats) ){
-            beatItem.kingMoveAfterBeats = [];
-            beats.push(beatItem);
-          }
-        }
-        for(var j in beats){
-          var beat = beats[j];
-          for(var k in  arrBeats){
-            if( (arrBeats[k].in_x === beat.in_x) &&
-                (arrBeats[k].in_y === beat.in_y) &&
-                (arrBeats[k].beat_x === beat.beat_x) &&
-                (arrBeats[k].beat_y === beat.beat_y) &&
-                (arrBeats[k].value === beat.value) ){
-              beat.kingMoveAfterBeats.push({'x':arrBeats[k].x, 'y':arrBeats[k].y });
-            }
-          }
-        }
-        return beats;
-    }
-
-    function getTerminateKing(tmpArrBeats){
-      kingBeats = [];
-
-      //console.log(terminateInTmp);
-      for(var k in  tmpArrBeats){
-        var kingMoveAfterBeats = tmpArrBeats[k].kingMoveAfterBeats;
-        for(var i in kingMoveAfterBeats){
-          var lastMove = { 'in_x': tmpArrBeats[k].in_x,
-                            'in_y': tmpArrBeats[k].in_y,
-                            'beat_x':tmpArrBeats[k].beat_x,
-                            'beat_y':tmpArrBeats[k].beat_y,
-                            'value':tmpArrBeats[k].value,
-                            'x': kingMoveAfterBeats[i].x,
-                            'y': kingMoveAfterBeats[i].y
-                          };
-          kingBeats.push(lastMove);
-        }
-      }
-
-      return kingBeats;
-    }
-
-
-    function possibleBeatsMove_depraciate(matrix, x, y){
-      var arrBeats = possibleBeatsMoveArrWrap(matrix, x, y);
-
-
-      if(!arrBeats  || !arrBeats.arrBeats.length){
-        return false;
-      }
-
-      var value = getValue(matrix, x, y );
-      var terminateIn = arrBeats.terminateIn;
-
-
-      //komentujac tego if-a - gra nie bedzie zgodna z zadadami - ale mozna podkrecic zmienna max_depth np na 8
-      //patrz 'bug' - to jest nastepny problem
-      /*
-      if( (king_white === value) || (king_black === value)   ){
-        var tmpArrBeats = getTmpKingPossibleBeatsByArrBeats(arrBeats.arrBeats);
-
-        var terminateInTmp = [];
-        terminateInTmp = getTerminateKingBeats( tmpArrBeats, x, y, terminateInTmp );
-        var terminateIn = getTerminateKing(terminateInTmp);
-      }
-      */
-
-
-
-
-
-      var move = 8;
-      outt = [];
-      if(arrBeats.arrBeats.length){
-        for( i in terminateIn){
-          var arrBeatsMove = [];
-          arrBeatsMove = getBeats(arrBeats.arrBeats, x, y, terminateIn[i], arrBeatsMove);
-          outt.push({'x':terminateIn[i].x, 'y':terminateIn[i].y, 'beats': arrBeatsMove });
-        }
-      }
-      return outt;
-    }
-
-    /**
-    * bierzemy tylko ostatnie mozliwosci klikniecia na dane skosowanie - TODO!!! - mozliwosc zapetlenia!! - patrz testy 'bug'
-    */
-    function getTerminateKingBeats(  tmpArrBeats, x, y, kingBeats ){
-        var findBeat = [];
-        for(var k in tmpArrBeats){
-          var kingMoveAfterBeats = tmpArrBeats[k].kingMoveAfterBeats;
-          if( (tmpArrBeats[k].in_x === x) && (tmpArrBeats[k].in_y === y) ){
-
-            var find = false;
-
-            for(var j in kingMoveAfterBeats){
-              var newX = kingMoveAfterBeats[j].x;
-              var newY = kingMoveAfterBeats[j].y;
-              for(var kk in tmpArrBeats){
-                if( (tmpArrBeats[kk].in_x === newX) && (tmpArrBeats[kk].in_y === newY) ){
-                  find = true;
-                  //findBeat.push({'x':newX, 'y':newY});
-                  getTerminateKingBeats( tmpArrBeats, newX, newY, kingBeats ); //malo optymalne dla depth 12.
-                }
-              }
-            }
-
-            if(!find){
-              //console.log(tmpArrBeats[k]);
-              if( !inArrayBeats(tmpArrBeats[k], kingBeats)){
-                kingBeats.push(tmpArrBeats[k]);
-              }
-            }
-          }
-        }
-
-        return kingBeats;
-      }
-
-    function getBeats( arrBeats , x, y, terminateIn, out ){
-      if( x === terminateIn.in_x && y === terminateIn.in_y && out.length ){
-        out.push( terminateIn );
-        return out;
-      }
-      out.push( terminateIn );
-
-      for(var i in  arrBeats){
-        if( (arrBeats[i].x ===  terminateIn.in_x) &&  (arrBeats[i].y ===  terminateIn.in_y) ){
-          return getBeats( arrBeats , x, y, arrBeats[i], out );
-        }
-      }
-
-      return out;
     }
 
     function possibleSimpleKingMove(matrixIn, x, y, value){
@@ -826,8 +629,10 @@ logic = (function() {
     function getBestMatix( matrix_in, player ){
         var tree_ab  = alphaBetaPruning( matrix_in, 0,  -inf, inf, player );
 
+        //console.log('tree_ab', tree_ab);
+
         var  matrix_out = getMatrix(  tree_ab.tree, tree_ab.alphabeta  );
-        return  matrix_out
+        return  matrix_out;
     }
 
     function getMatrix( tree , alphabeta  ){
@@ -869,6 +674,7 @@ logic = (function() {
                 alpha =  Math.max(alpha, value);
 
                 tree[i].alphabeta = alpha;
+
                 if( beta <= alpha ){
                     break;
                 }
@@ -882,7 +688,7 @@ logic = (function() {
                 tree[i].matrix = children[i].matrix;
                 tree[i].move = children[i].move;
 
-                var tree_children = alphaBetaPruning(  children[i].matrix, depth, alpha, beta, -player );
+                var tree_children = alphaBetaPruning( children[i].matrix, depth, alpha, beta, -player );
                 //var beta = ( tree_children['alphabeta'] < beta  ) ?  tree_children['alphabeta'] :  beta;
                 value = Math.min(value, tree_children['alphabeta']);
                 beta = Math.min(beta, value);
@@ -932,7 +738,7 @@ logic = (function() {
         initMatrix : initMatrix,
         possibleMove : possibleMove,
         possibleOneStepMove : possibleOneStepMove,
-        possibleBeatsMoveArr: possibleBeatsMoveArr,
+        //possibleBeatsMoveArr: possibleBeatsMoveArr,
         //possibleBeatsMoveArrWrap: possibleBeatsMoveArrWrap,
         possibleBeatsMove : possibleBeatsMove,
         getValue : getValue,

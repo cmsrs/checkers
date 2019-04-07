@@ -476,16 +476,16 @@ display = (function() {
         }
         worker.addEventListener('error', onError, false);
     }
-    
+
     function levelByNo( no ){
       if( no === 3 ){
         return 8;
       }
       if( no === 2 ){
-        return 4;
+        return 2;
       }
       if( no === 1 ){
-        return 2;
+        return 1;
       }
     }
 
