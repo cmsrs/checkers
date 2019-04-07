@@ -989,15 +989,49 @@ describe('gameLogicWorker', function() {
         //console.log('eval_human', eval_human);
       }
       //console.log('===bestMatrix================================================================');
-      var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+
       //console.log('===best=====');
       //console.log(out);
+
+      conf.action.max_depth = 2;
+      logic.init( conf.action );
+      var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+      //console.log( out );
 
       assert.equal(out.matrix[7][6], conf.action.king_black ); //na max_depth : 2, - jest ok //na 8 poziomie zle sie wyswietla
       //assert.notEqual(out.matrix[4][3], conf.action.draftsman_black);
       //assert.notEqual(out.matrix[4][5], conf.action.draftsman_black);
 
+      conf.action.max_depth = 8;
+      logic.init( conf.action );
+      var out2 = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+      assert.equal(out.matrix[7][6], conf.action.king_black ); //na max_depth : 2, - jest ok //na 8 poziomie zle sie wyswietla
+
+
+
     });
+
+    it.skip('diagnose black move real5 example TODO', function(){ //TODO
+      testMatrixEmpty[0][1] = conf.action.king_white;
+      testMatrixEmpty[0][7] = conf.action.draftsman_black;
+
+      testMatrixEmpty[1][4] = conf.action.draftsman_white;
+      testMatrixEmpty[3][6] = conf.action.draftsman_black;
+
+      testMatrixEmpty[5][2] = conf.action.king_black;
+
+      console.log(testMatrixEmpty);
+
+      conf.action.max_depth = 8;
+      logic.init( conf.action );
+      var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+      console.log('===best=====');
+      console.log(out);
+
+      assert.equal(out.matrix[4][5], conf.action.blank);
+
+    });
+
 
 
 
