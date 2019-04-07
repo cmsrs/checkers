@@ -766,9 +766,11 @@ logic = (function() {
           for (var x=0;x<cols;x++) {
             var value = getValue(matrix, x, y);
 
+            /*
             if( ((x === 0) ||  (x === cols-1))  &&  (  (draftsman_white === value) || (draftsman_black === value)  ) ){
                sumX += 2*value;
             }
+            */
 
 
             if( (player === human) &&  ( draftsman_white === value  ) ){
@@ -791,8 +793,8 @@ logic = (function() {
             }
           }
         }
+        /*
         var sum = (scorePlayer + scoreEnemy);
-
         if(sum > 0 &&  (!scorePlayer || !scoreEnemy) ){
           win = human;
         }
@@ -800,6 +802,15 @@ logic = (function() {
         if(sum < 0 &&  (!scorePlayer || !scoreEnemy) ){
           win = comp;
         }
+        */
+
+        if( ((player === comp) &&  !scoreEnemy) || ((player === human) &&  !scorePlayer) ){
+          return { score: 0, win: comp};
+        }
+        if( (player === human) &&  !scoreEnemy || ((player === comp)  &&  !scorePlayer) ){
+          return { score: 0, win: human};
+        }
+
 
         // var maxScoreByBeatEnemy = evaluateMaxScoreByBeat( matrix, -1*player );
         // var maxScoreByBeat = 0;
@@ -807,9 +818,9 @@ logic = (function() {
         //   var maxScoreByBeat = evaluateMaxScoreByBeat( matrix, player ); //ma to sens jesli samego siebie nie bija patrz test: diagnose black move real3 example
         // }
 
-        var score = scorePlayer*coef_checker + player*sumY+ player*sumX; // + player*maxScoreByBeat*coef_checker - player*maxScoreByBeatEnemy*coef_checker*10;
+        var score = scorePlayer*coef_checker + player*sumY+ player*sumX; // + player*maxScoreByBeat*coef_checker - player*maxScoreByBeatEnemy*coef_checker;
 
-        return { score: score, win: win};
+        return { score: score, win: 0};
     }
 
     function getBestMatix( matrix_in, player ){

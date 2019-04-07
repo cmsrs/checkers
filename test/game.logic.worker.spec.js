@@ -81,8 +81,10 @@ describe('gameLogicWorker', function() {
       testMatrixEmpty[1][4] = conf.action.king_black;
       //testMatrixEmpty[2][3] = conf.action.king_black;
 
+      //console.log(testMatrixEmpty);
       var out = logic.evaluateMaxScoreByBeat(testMatrixEmpty, conf.action.human );
-      assert.equal(out, 101);
+      //console.log(out);
+      assert.equal(out,  Math.abs(conf.action.king_black + conf.action.draftsman_black)  );
 
     });
   });
@@ -359,7 +361,7 @@ describe('gameLogicWorker', function() {
   });
 
 
-  describe.skip('evaluate( matrix, player )', function() {
+  describe('evaluate( matrix, player )', function() {
     it('evaluate init matrix', function() {
       //var initMatrix = logic.initMatrix();
 
@@ -375,7 +377,7 @@ describe('gameLogicWorker', function() {
       testMatrixEmpty[1][2] = conf.action.draftsman_black;
       //console.log(testMatrixEmpty);
       var out3 = logic.evaluate( testMatrixEmpty, conf.action.human );
-      //console.log(out3);
+      //console.log( 'o3', out3);
       assert.equal(  out3.score, 0 );
       assert.equal(  out3.win, conf.action.comp );
 
@@ -384,7 +386,10 @@ describe('gameLogicWorker', function() {
       testMatrixEmpty[y][2] = conf.action.king_white;
       //console.log(testMatrixEmpty);
       var out4 = logic.evaluate( testMatrixEmpty, conf.action.human );
-      assert.equal(  out4.score, (conf.action.draftsman_white + conf.action.king_white)*conf.action.coef_checker + logic.getYForHuman(y) );
+      //console.log(out4);
+
+      //assert.equal(  out4.score, (conf.action.draftsman_white + conf.action.king_white)*conf.action.coef_checker + logic.getYForHuman(y) );
+      assert.equal(  out4.score, 0);
       assert.equal(  out4.win, conf.action.human );
       //console.log(out4);
 
@@ -393,8 +398,8 @@ describe('gameLogicWorker', function() {
       testMatrixEmpty[y][2] = conf.action.draftsman_white;
       //console.log(testMatrixEmpty);
       var out5 = logic.evaluate( testMatrixEmpty, conf.action.human );
-      assert.equal(  out5.score, (conf.action.draftsman_white + conf.action.draftsman_white)*conf.action.coef_checker + 2*logic.getYForHuman(y) );
-      //assert.equal(  out5.score, 2 );
+      //assert.equal(  out5.score, (conf.action.draftsman_white + conf.action.draftsman_white)*conf.action.coef_checker + 2*logic.getYForHuman(y) );
+      assert.equal(  out5.score, 0 );
       assert.equal(  out5.win, conf.action.human );
 
 
@@ -438,15 +443,16 @@ describe('gameLogicWorker', function() {
 
       testMatrixEmpty[1][0] = conf.action.blank;
       testMatrixEmpty[2][1] = conf.action.draftsman_black;
+      //console.log(testMatrixEmpty);
 
       var h2 = logic.evaluate( testMatrixEmpty, conf.action.human );
       var c2 = logic.evaluate( testMatrixEmpty, conf.action.comp );
 
       assert.notEqual(  h2.score, 0 );
       assert.notEqual(  c2.score, 0 );
-      assert.notEqual( Math.abs(h2.score), Math.abs(c2.score) );
-      assert.ok( Math.abs(h2.score) < Math.abs(c2.score) );
-      assert.equal( Math.abs(h2.score)+1 , Math.abs(c2.score) );
+      assert.equal( Math.abs(h2.score), Math.abs(c2.score) );  //patrz evaluateY(y) dlatego ===
+      //assert.ok( Math.abs(h2.score) < Math.abs(c2.score) );
+      //assert.equal( Math.abs(h2.score)+1 , Math.abs(c2.score) );
       //console.log(h2.score);
       //console.log(c2.score);
       testMatrixEmpty[6][1] = conf.action.blank;
@@ -458,16 +464,26 @@ describe('gameLogicWorker', function() {
       var c3 = logic.evaluate( testMatrixEmpty, conf.action.comp );
       assert.notEqual(  h3.score, 0 );
       assert.notEqual(  c3.score, 0 );
-      assert.notEqual( Math.abs(h3.score), Math.abs(c3.score) );
-      assert.ok( Math.abs(h3.score) > Math.abs(c3.score) );
-      assert.equal( Math.abs(h3.score), Math.abs(c3.score) + 1 );
-
+      assert.equal( Math.abs(h3.score), Math.abs(c3.score) );
+      //assert.ok( Math.abs(h3.score) > Math.abs(c3.score) );
+      //assert.equal( Math.abs(h3.score), Math.abs(c3.score) + 1 );
 
       //console.log(testMatrixEmpty);
+    });
 
-
+    it('evaluate y test next', function() {
+      testMatrixEmpty[6][3] = conf.action.draftsman_white;
+      testMatrixEmpty[0][3] = conf.action.draftsman_black;
+      //console.log( testMatrixEmpty );
+      var h3 = logic.evaluate( testMatrixEmpty, conf.action.human );
+      var c3 = logic.evaluate( testMatrixEmpty, conf.action.comp );
+      assert.notEqual(  h3.score, 0 );
+      assert.notEqual(  c3.score, 0 );
+      assert.notEqual( Math.abs(h3.score), Math.abs(c3.score) );
 
     });
+
+
 
     it('evaluate real matrix', function() {
 
