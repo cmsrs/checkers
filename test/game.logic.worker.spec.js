@@ -826,6 +826,8 @@ describe('gameLogicWorker', function() {
       //console.log(testMatrixEmpty);
       var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
       //console.log(out);
+      assert.equal(out.matrix[0][5], conf.action.draftsman_black);
+
 
       var possibleMoves  =logic.possibleMoves(testMatrixEmpty, conf.action.comp);
       //console.log(possibleMoves);
