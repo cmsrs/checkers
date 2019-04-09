@@ -611,7 +611,8 @@ logic = (function() {
             var value = -1*inf;
             //var value = alpha;
 
-            var tree = {'matrix': children[0].matrix, 'move': children[0].move, 'alphabeta': alpha  };  //do przemyslenia
+            var tree = {};  //do przemyslenia
+            //var tree = {'matrix': children[0].matrix, 'move': children[0].move, 'alphabeta': alpha  };  //do przemyslenia
             for( var i=0;  i<children.length;  i++ ){
 
                 var tree_children  = alphaBetaPruning( children[i].matrix, depth, alpha, beta, -player,  children[i].move );
@@ -636,7 +637,8 @@ logic = (function() {
         }else{
             var value = inf;
             //var value = beta;
-            var tree = {'matrix': children[0].matrix, 'move': children[0].move, 'alphabeta': beta }; //do przemyslenia
+            //var tree = {'matrix': children[0].matrix, 'move': children[0].move, 'alphabeta': beta }; //do przemyslenia
+            var tree = {}; //do przemyslenia            
 
             for( var i=0;  i<children.length;  i++ ){
 
