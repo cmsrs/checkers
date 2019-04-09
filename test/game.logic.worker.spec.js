@@ -238,13 +238,13 @@ describe('gameLogicWorker', function() {
         //console.log(out);
 
 
-        assert.equal(out.matrix[4][5], conf.action.comp); // rozna w zaleznosci od poziomu lub [4][1]
+        assert.equal(out.matrix[4][5], conf.action.comp); // rozna w zaleznosci od poziomu lub [4][1] lub [4][5]
 
         testMatrixEmpty[5][6]  = conf.action.draftsman_black;
         //console.log(testMatrixEmpty);
         var out2 = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
         //console.log(out);
-        assert.equal(out2.matrix[4][5], conf.action.comp); // rozna w zaleznosci od poziomu lub [4][1]
+        assert.equal(out2.matrix[4][5], conf.action.comp); // rozna w zaleznosci od poziomu lub [4][1] lub  [4][5]
 
         //console.log(out2);
     });
@@ -1013,7 +1013,7 @@ describe('gameLogicWorker', function() {
 
     });
 
-    it.skip('diagnose black move real5 example TODO', function(){ //TODO
+    it.skip('diagnose black move real5 example - TODO', function(){ //TODO
       testMatrixEmpty[0][1] = conf.action.king_white;
       testMatrixEmpty[0][7] = conf.action.draftsman_black;
 
@@ -1022,19 +1022,87 @@ describe('gameLogicWorker', function() {
 
       testMatrixEmpty[5][2] = conf.action.king_black;
 
-      console.log(testMatrixEmpty);
+      //console.log(testMatrixEmpty);
 
       conf.action.max_depth = 8;
       logic.init( conf.action );
       var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
-      console.log('===best=====');
-      console.log(out);
+      //console.log('===best=====');
+      //console.log(out);
 
       assert.equal(out.matrix[4][5], conf.action.blank);
-
     });
 
 
+    it.skip('diagnose black move real6 example - TODO', function(){//TODO
+      testMatrixEmpty[0][1] = conf.action.draftsman_black;
+      testMatrixEmpty[0][3] = conf.action.draftsman_black;
+      testMatrixEmpty[0][5] = conf.action.draftsman_black;
+      testMatrixEmpty[0][7] = conf.action.draftsman_black;
+
+      testMatrixEmpty[1][2] = conf.action.draftsman_black;
+      testMatrixEmpty[1][6] = conf.action.draftsman_black;
+
+      testMatrixEmpty[2][1] = conf.action.draftsman_black;
+      testMatrixEmpty[2][3] = conf.action.draftsman_black;
+      testMatrixEmpty[2][7] = conf.action.draftsman_white;
+
+      testMatrixEmpty[3][2] = conf.action.draftsman_black;
+
+      testMatrixEmpty[4][5] = conf.action.draftsman_white;
+      testMatrixEmpty[4][7] = conf.action.draftsman_white;
+
+      testMatrixEmpty[5][0] = conf.action.draftsman_white;
+
+      testMatrixEmpty[6][1] = conf.action.draftsman_white;
+      testMatrixEmpty[6][3] = conf.action.draftsman_white;
+      testMatrixEmpty[6][5] = conf.action.draftsman_black;
+      testMatrixEmpty[6][7] = conf.action.draftsman_white;
+
+      testMatrixEmpty[7][0] = conf.action.draftsman_white;
+      testMatrixEmpty[7][2] = conf.action.draftsman_white;
+      testMatrixEmpty[7][4] = conf.action.draftsman_white;
+
+      //console.log(testMatrixEmpty);
+
+      //to dziala ok
+      // conf.action.max_depth = 2;
+      // logic.init( conf.action );
+      // var out2 = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+      // console.log('===best=====');
+      // console.log(out2);
+      // assert.equal(out2.matrix[7][6], conf.action.king_black);
+
+
+
+
+      conf.action.max_depth = 8;
+      logic.init( conf.action );
+
+
+      var possibleMoves  =logic.possibleMoves(testMatrixEmpty, conf.action.comp);
+      //console.log(possibleMoves);
+
+      var matrixPossibleMoves  =logic.getMatrixByPossibleMoves(testMatrixEmpty, conf.action.comp, possibleMoves);
+      //console.log(matrixPossibleMoves);
+
+
+      for(var i in  matrixPossibleMoves){
+        //console.log('========');
+        //console.log(matrixPossibleMoves[i]);
+        var eval = logic.evaluate( matrixPossibleMoves[i].matrix, conf.action.comp );
+        //console.log('eval_comp', eval);
+        var eval_human = logic.evaluate( matrixPossibleMoves[i].matrix, conf.action.human );
+        //console.log('eval_human', eval_human);
+      }
+
+
+
+      var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+      //console.log('===best=====');
+      //console.log(out);
+      assert.equal(out.matrix[7][6], conf.action.king_black);
+    });
 
 
   });
