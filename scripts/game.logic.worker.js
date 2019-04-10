@@ -11,7 +11,8 @@ logic = (function() {
         draftsman_black,
         king_black,
         coef_checker,
-        comp ;
+        comp
+        ;
 
     function init( conf ){
         cols = conf.cols;
@@ -516,17 +517,17 @@ logic = (function() {
     function evaluateY(y){
       var evalY = 0;
       if(y===0){
-        evalY = 4;
-      }else if(  1<=y<=2 ){
-        evalY = 2;
+        evalY = 5;
+      }else if(  1<=y<=1 ){
+        evalY =2;
       }else if( 3<=y<=4 ){
         evalY = 2;
       }else if( 5<=y<=5 ){
-        evalY = 3;
+        evalY = 2;
       }else if( 6<=y<=6 ){
-        evalY = 5;
+        evalY = 2;
       }else if( y===7 ){
-        evalY = 10;
+        evalY = 5;
       }
 
       return evalY;
@@ -548,8 +549,8 @@ logic = (function() {
           for (var x=0;x<cols;x++) {
             var value = getValue(matrix, x, y);
 
-            // if( ((x === 0) ||  (x === cols-1))  &&  (  (draftsman_white === value) || (draftsman_black === value)  ) ){
-            //    sumX += 2*value;
+            // if( ((x === 0) ||  (x === cols-1))  &&  (  inArray(value,playerValues)  ) ){
+            //    sumX += value;
             // }
 
             if( (player === human) &&  ( draftsman_white === value  ) ){
@@ -569,12 +570,18 @@ logic = (function() {
             }
           }
         }
+        scorePlayer = Math.abs(scorePlayer);
+        scoreEnemy = Math.abs(scoreEnemy);
 
+
+        var win = 0;
         if( ((player === comp) &&  !scoreEnemy) || ((player === human) &&  !scorePlayer) ){
-          return { score: 0, win: comp};
+          win = comp;
+          return { score: -inf, win: comp};
         }
         if( (player === human) &&  !scoreEnemy || ((player === comp)  &&  !scorePlayer) ){
-          return { score: 0, win: human};
+          win = human;
+          return { score: inf, win: human};
         }
 
 
@@ -584,13 +591,14 @@ logic = (function() {
         //   var maxScoreByBeat = evaluateMaxScoreByBeat( matrix, player ); //ma to sens jesli samego siebie nie bija patrz test: diagnose black move real3 example
         // }
 
-        var score = scorePlayer*coef_checker + player*sumY+ player*sumX; // + player*maxScoreByBeat*coef_checker;// - player*maxScoreByBeatEnemy*coef_checker;
+        //  + player*Math.abs(sumX) ; //
+        var score = player*scorePlayer*coef_checker + player*sumY;// + player*maxScoreByBeat*coef_checker; // - player*maxScoreByBeatEnemy*coef_checker;
 
-        return { score: score, win: 0};
+        return { score: score, win: win};
     }
 
     function getBestMatix( matrix_in, player ){
-        var tree_ab  = alphaBetaPruning( matrix_in, 0,  -inf, inf, player, null );
+        var tree_ab  = alphaBetaPruning( matrix_in, max_depth,  -inf, inf, player, null );
 
         return tree_ab.tree;
     }
@@ -601,33 +609,28 @@ logic = (function() {
         var possibleMoves = logic.possibleMoves(node, player);
         var children = logic.getMatrixByPossibleMoves(node, player, possibleMoves);
 
-        if(  (eval['win'] !== 0 )   || ( !possibleMoves.length ) || (depth >= max_depth )  || !children.length   ){ // || ( eval['score'] === 0 )
-            return  { 'alphabeta': eval['score'], 'tree' : null };
+        if(  (eval['win'] !== 0 )   || ( !possibleMoves.length ) || (depth === 0 )  || !children.length   ){ // || ( eval['score'] === 0 )
+            return  { 'alphabeta': eval['score'], 'tree' : {'matrix': node, 'move': move, 'alphabeta': eval['score']  } };
         }
-
-        depth++;
 
         if( player === human ){ //maximizingPlayer human.
             var value = -1*inf;
-            //var value = alpha;
 
-            var tree = {};  //do przemyslenia
-            //var tree = {'matrix': children[0].matrix, 'move': children[0].move, 'alphabeta': alpha  };  //do przemyslenia
+            var tree = {};
             for( var i=0;  i<children.length;  i++ ){
+                var node = children[i].matrix;
+                var move = children[i].move;
 
-                var tree_children  = alphaBetaPruning( children[i].matrix, depth, alpha, beta, -player,  children[i].move );
-                //value = Math.max(value, tree_children['alphabeta']);
+                var tree_children  = alphaBetaPruning( node, depth - 1, alpha, beta, -player,  move );
                 if( tree_children['alphabeta'] >  value ){
                   value = tree_children['alphabeta'];
                   tree = {};
-                  tree.matrix = children[i].matrix;
-                  tree.move = children[i].move;
+                  tree.matrix = node;
+                  tree.move = move;
                   tree.alphabeta = alpha;
                 }
 
                 alpha =  Math.max(alpha, value);
-                //console.log( 'human_alha', alpha );
-
 
                 if( beta <= alpha ){
                     break;
@@ -636,24 +639,21 @@ logic = (function() {
             return { 'alphabeta':  value, 'tree': tree  };
         }else{
             var value = inf;
-            //var value = beta;
-            //var tree = {'matrix': children[0].matrix, 'move': children[0].move, 'alphabeta': beta }; //do przemyslenia
-            var tree = {}; //do przemyslenia            
+            var tree = {};
 
             for( var i=0;  i<children.length;  i++ ){
+                var node = children[i].matrix;
+                var move = children[i].move;
 
-                var tree_children = alphaBetaPruning( children[i].matrix, depth, alpha, beta, -player,  children[i].move );
-                //value = Math.min(value, tree_children['alphabeta']);
+                var tree_children = alphaBetaPruning( node, depth - 1, alpha, beta, -player,  move );
                 if( tree_children['alphabeta'] < value  ){
                   value = tree_children['alphabeta'];
                   tree = {};
-                  tree.matrix = children[i].matrix;
-                  tree.move = children[i].move;
+                  tree.matrix = node;
+                  tree.move = move;
                   tree.alphabeta = beta;
                 }
-
                 beta = Math.min(beta, value);
-                //console.log('comp_beta', beta);
 
                 if( beta <= alpha ){
                     break;

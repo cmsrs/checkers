@@ -238,13 +238,13 @@ describe('gameLogicWorker', function() {
         //console.log(out);
 
 
-        assert.equal(out.matrix[4][5], conf.action.comp); // rozna w zaleznosci od poziomu lub [4][1] lub [4][5]
+        assert.equal(out.matrix[4][5], conf.action.draftsman_black  ); // rozna w zaleznosci od poziomu lub [4][1] lub [4][5]
 
         testMatrixEmpty[5][6]  = conf.action.draftsman_black;
         //console.log(testMatrixEmpty);
         var out2 = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
         //console.log(out);
-        assert.equal(out2.matrix[4][5], conf.action.comp); // rozna w zaleznosci od poziomu lub [4][1] lub  [4][5]
+        assert.equal(out2.matrix[4][5], conf.action.draftsman_black); // rozna w zaleznosci od poziomu lub [4][1] lub  [4][5]
 
         //console.log(out2);
     });
@@ -383,7 +383,7 @@ describe('gameLogicWorker', function() {
       //console.log(testMatrixEmpty);
       var out3 = logic.evaluate( testMatrixEmpty, conf.action.human );
       //console.log( 'o3', out3);
-      assert.equal(  out3.score, 0 );
+      assert.equal(  out3.score, -conf.action.inf );
       assert.equal(  out3.win, conf.action.comp );
 
       var y = 1;
@@ -394,7 +394,7 @@ describe('gameLogicWorker', function() {
       //console.log(out4);
 
       //assert.equal(  out4.score, (conf.action.draftsman_white + conf.action.king_white)*conf.action.coef_checker + logic.getYForHuman(y) );
-      assert.equal(  out4.score, 0);
+      assert.equal(  out4.score, conf.action.inf);
       assert.equal(  out4.win, conf.action.human );
       //console.log(out4);
 
@@ -404,7 +404,7 @@ describe('gameLogicWorker', function() {
       //console.log(testMatrixEmpty);
       var out5 = logic.evaluate( testMatrixEmpty, conf.action.human );
       //assert.equal(  out5.score, (conf.action.draftsman_white + conf.action.draftsman_white)*conf.action.coef_checker + 2*logic.getYForHuman(y) );
-      assert.equal(  out5.score, 0 );
+      assert.ok(  out5.score > 0 );
       assert.equal(  out5.win, conf.action.human );
 
 
@@ -1013,7 +1013,7 @@ describe('gameLogicWorker', function() {
 
     });
 
-    it.skip('diagnose black move real5 example - TODO', function(){ //TODO
+    it('diagnose black move real5 example', function(){ // ./node_modules/mocha/bin/mocha  --timeout 15000
       testMatrixEmpty[0][1] = conf.action.king_white;
       testMatrixEmpty[0][7] = conf.action.draftsman_black;
 
@@ -1034,7 +1034,7 @@ describe('gameLogicWorker', function() {
     });
 
 
-    it.skip('diagnose black move real6 example - TODO', function(){//TODO
+    it('diagnose black move real6 example', function(){
       testMatrixEmpty[0][1] = conf.action.draftsman_black;
       testMatrixEmpty[0][3] = conf.action.draftsman_black;
       testMatrixEmpty[0][5] = conf.action.draftsman_black;
@@ -1103,6 +1103,70 @@ describe('gameLogicWorker', function() {
       //console.log(out);
       assert.equal(out.matrix[7][6], conf.action.king_black);
     });
+
+      it('diagnose black move real6b example', function(){
+        testMatrixEmpty[0][1] = conf.action.draftsman_black;
+        testMatrixEmpty[0][3] = conf.action.draftsman_black;
+        testMatrixEmpty[0][5] = conf.action.draftsman_black;
+        testMatrixEmpty[0][7] = conf.action.draftsman_black;
+
+        testMatrixEmpty[1][2] = conf.action.draftsman_black;
+        testMatrixEmpty[1][6] = conf.action.draftsman_black;
+        testMatrixEmpty[6][5] = conf.action.draftsman_black;
+
+        testMatrixEmpty[6][7] = conf.action.draftsman_white;
+        testMatrixEmpty[7][0] = conf.action.draftsman_white;
+        testMatrixEmpty[7][2] = conf.action.draftsman_white;
+        testMatrixEmpty[7][4] = conf.action.draftsman_white;
+
+        var out0 = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+        assert.equal(out0.matrix[7][6], conf.action.king_black);
+
+        conf.action.max_depth = 8;
+        logic.init( conf.action );
+        var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+        //console.log(out);
+        assert.equal(out.matrix[7][6], conf.action.king_black);
+      });
+
+
+      it('diagnose black move real7 example', function(){
+        testMatrixEmpty[0][1] = conf.action.draftsman_black;
+        testMatrixEmpty[0][3] = conf.action.draftsman_black;
+        testMatrixEmpty[0][7] = conf.action.draftsman_black;
+
+        testMatrixEmpty[2][1] = conf.action.draftsman_white;
+        testMatrixEmpty[2][5] = conf.action.draftsman_white;
+
+        testMatrixEmpty[4][1] = conf.action.draftsman_white;
+        testMatrixEmpty[4][5] = conf.action.king_black;
+        testMatrixEmpty[4][7] = conf.action.draftsman_black;
+
+        //console.log(testMatrixEmpty);
+
+        conf.action.max_depth = 2;
+        logic.init( conf.action );
+        var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+        //console.log('===best=====');
+        assert.equal(out.matrix[1][4], conf.action.blank);
+
+        var possibleMoves  =logic.possibleMoves(testMatrixEmpty, conf.action.comp);
+        //console.log(possibleMoves);
+
+        var matrixPossibleMoves  =logic.getMatrixByPossibleMoves(testMatrixEmpty, conf.action.comp, possibleMoves);
+        //console.log(matrixPossibleMoves);
+
+
+        for(var i in  matrixPossibleMoves){
+          //console.log('========');
+          //console.log(matrixPossibleMoves[i]);
+          var eval = logic.evaluate( matrixPossibleMoves[i].matrix, conf.action.comp );
+          //console.log('eval_comp', eval);
+          var eval_human = logic.evaluate( matrixPossibleMoves[i].matrix, conf.action.human );
+          //console.log('eval_human', eval_human);
+        }
+      });
+
 
 
   });
