@@ -1,5 +1,6 @@
 logic = (function() {
     var
+        //conf,
         cols ,
         rows ,
         max_depth  ,
@@ -16,6 +17,7 @@ logic = (function() {
         ;
 
     function init( conf ){
+        //conf = conf;
         cols = conf.cols;
         rows = conf.rows;
         draftsman_white = conf.draftsman_white;
@@ -31,6 +33,52 @@ logic = (function() {
         comp = conf.comp;
         coef_checker = conf.coef_checker;
     }
+
+    function initTestMatrix(){
+      var testMatrixEmpty = [];
+
+      for (var y=0;y<rows;y++) {
+          testMatrixEmpty[y] = [];
+          for (var x=0;x<cols;x++) {
+              testMatrixEmpty[y][x] = '';
+              if( ( x%2 && !(y%2) ) || ( !(x%2) && y%2 ) ){
+                testMatrixEmpty[y][x] = blank;
+              }
+          }
+      }
+
+
+      testMatrixEmpty[0][1] = draftsman_black;
+      testMatrixEmpty[0][3] = draftsman_black;
+      testMatrixEmpty[0][5] = draftsman_black;
+      testMatrixEmpty[0][7] = draftsman_black;
+
+      testMatrixEmpty[1][2] = draftsman_black;
+      testMatrixEmpty[1][6] = draftsman_black;
+
+      testMatrixEmpty[2][1] = draftsman_black;
+      testMatrixEmpty[2][3] = draftsman_black;
+      testMatrixEmpty[2][7] = draftsman_white;
+
+      testMatrixEmpty[3][2] = draftsman_black;
+
+      testMatrixEmpty[4][5] = draftsman_white;
+      testMatrixEmpty[4][7] = draftsman_white;
+
+      testMatrixEmpty[5][0] = draftsman_white;
+
+      testMatrixEmpty[6][1] = draftsman_white;
+      testMatrixEmpty[6][3] = draftsman_white;
+      testMatrixEmpty[6][5] = draftsman_black;
+      testMatrixEmpty[6][7] = draftsman_white;
+
+      testMatrixEmpty[7][0] = draftsman_white;
+      testMatrixEmpty[7][2] = draftsman_white;
+      testMatrixEmpty[7][4] = draftsman_white;
+
+      return testMatrixEmpty;
+    }
+
 
     function initMatrix(){
         var out = [];
@@ -519,17 +567,17 @@ logic = (function() {
     function evaluateY(y){
       var evalY = 0;
       if(y===0){
-        evalY = 5;
+        evalY = 3;
       }else if(  1<=y<=1 ){
         evalY =2;
       }else if( 3<=y<=4 ){
-        evalY = 2;
+        evalY = 1;
       }else if( 5<=y<=5 ){
-        evalY = 2;
+        evalY = 1;
       }else if( 6<=y<=6 ){
         evalY = 2;
       }else if( y===7 ){
-        evalY = 5;
+        evalY = 3;
       }
 
       return evalY;
@@ -572,6 +620,9 @@ logic = (function() {
             }
           }
         }
+
+        var sum = scorePlayer + scoreEnemy;
+
         scorePlayer = Math.abs(scorePlayer);
         scoreEnemy = Math.abs(scoreEnemy);
 
@@ -588,14 +639,14 @@ logic = (function() {
           return { score: near_inf, win: human};
         }
 
-        // var maxScoreByBeatEnemy = evaluateMaxScoreByBeat( matrix, -1*player );
-        // var maxScoreByBeat = 0;
-        // if( !maxScoreByBeatEnemy ){
-        //   var maxScoreByBeat = evaluateMaxScoreByBeat( matrix, player ); //ma to sens jesli samego siebie nie bija patrz test: diagnose black move real3 example
-        // }
+        var maxScoreByBeatEnemy = evaluateMaxScoreByBeat( matrix, -1*player );
+        var maxScoreByBeat = 0;
+        if( !maxScoreByBeatEnemy ){
+          var maxScoreByBeat = evaluateMaxScoreByBeat( matrix, player ); //ma to sens jesli samego siebie nie bija patrz test: diagnose black move real3 example
+        }
 
-        //  + player*Math.abs(sumX) ; //
-        var score = player*scorePlayer*coef_checker + player*sumY; /*+ player*maxScoreByBeat*coef_checker - player*maxScoreByBeatEnemy*coef_checker;*/
+        var score = sum*coef_checker + player*sumY + player*maxScoreByBeat*coef_checker - player*maxScoreByBeatEnemy*coef_checker;
+        //var score = sum;
 
         return { score: score, win: win};
     }
@@ -701,6 +752,7 @@ logic = (function() {
         play : play,
         evaluate : evaluate,
         initMatrix : initMatrix,
+        initTestMatrix: initTestMatrix,
         possibleMove : possibleMove,
         possibleOneStepMove : possibleOneStepMove,
         possibleBeatsMove : possibleBeatsMove,

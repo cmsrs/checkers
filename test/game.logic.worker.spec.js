@@ -291,6 +291,32 @@ describe('gameLogicWorker', function() {
 
     })
 
+    it('getBestMatix testMatrix', function() {
+      //testMatrix[1][2] = conf.action.blank;
+      //console.log(testMatrix);
+
+
+      var out = logic.getBestMatix(testMatrix, conf.action.comp);
+      //console.log('_________out_______');
+      //console.log(out);
+
+      assert.equal(out.matrix[6][3],  conf.action.draftsman_black );
+
+
+      // var possibleMoves  =logic.possibleMoves(testMatrix, conf.action.comp);
+      // //console.log(possibleMoves);
+      //
+      // var matrixPossibleMoves  =logic.getMatrixByPossibleMoves(testMatrix, conf.action.comp, possibleMoves);
+      // //console.log(matrixPossibleMoves);
+      //
+      // for(var i in  matrixPossibleMoves){
+      //   console.log('========');
+      //   console.log(matrixPossibleMoves[i].matrix);
+      //   var eval = logic.evaluate( matrixPossibleMoves[i].matrix, conf.action.comp );
+      //   console.log(eval);
+      // }
+
+    });
 
   });
 
@@ -1019,12 +1045,15 @@ describe('gameLogicWorker', function() {
       //console.log( out );
 
       assert.equal(out.matrix[7][6], conf.action.king_black ); //na max_depth : 2, - jest ok //na 8 poziomie zle sie wyswietla
+
+
       //assert.notEqual(out.matrix[4][3], conf.action.draftsman_black);
       //assert.notEqual(out.matrix[4][5], conf.action.draftsman_black);
 
       conf.action.max_depth = 8;
       logic.init( conf.action );
       var out2 = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+      //console.log( out2 );
       assert.equal(out.matrix[7][6], conf.action.king_black ); //na max_depth : 2, - jest ok //na 8 poziomie zle sie wyswietla
 
 
@@ -1084,12 +1113,12 @@ describe('gameLogicWorker', function() {
       //console.log(testMatrixEmpty);
 
       //to dziala ok
-      // conf.action.max_depth = 2;
-      // logic.init( conf.action );
-      // var out2 = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
-      // console.log('===best=====');
-      // console.log(out2);
-      // assert.equal(out2.matrix[7][6], conf.action.king_black);
+      conf.action.max_depth = 2;
+      logic.init( conf.action );
+      var out2 = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+      //console.log('===best=====');
+      //console.log(out2);
+      assert.equal(out2.matrix[7][6], conf.action.king_black); //w tym przypadku jest to ok
 
 
 
@@ -1106,7 +1135,7 @@ describe('gameLogicWorker', function() {
 
 
       for(var i in  matrixPossibleMoves){
-        //console.log('========');
+        //console.log('+++++');
         //console.log(matrixPossibleMoves[i]);
         var eval = logic.evaluate( matrixPossibleMoves[i].matrix, conf.action.comp );
         //console.log('eval_comp', eval);
@@ -1119,7 +1148,7 @@ describe('gameLogicWorker', function() {
       var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
       //console.log('===best=====');
       //console.log(out);
-      assert.equal(out.matrix[7][6], conf.action.king_black);
+      assert.notEqual(out.matrix[7][6], conf.action.king_black); //moze zostanie damka to nie jest do konca dobre posuniecie - bo latwo sie ja traci
     });
 
       it('diagnose black move real6b example', function(){
@@ -1630,10 +1659,8 @@ describe('gameLogicWorker', function() {
     });
   });
 
-  describe.skip('comp vs comp', function() {
+  describe('comp vs comp', function() {
     it('test comp vs comp', function(){
-      conf.action.max_depth = 8;
-      logic.init( conf.action );
 
       var comp = logic.getBestMatix(initMatrix, conf.action.comp);
 
@@ -1642,14 +1669,14 @@ describe('gameLogicWorker', function() {
       //var human = logic.getBestMatix(comp.matrix, conf.action.comp);
       //console.log(human);
       while(matrix){
-        console.log('=========comp=================');
-        console.log(matrix);
-        conf.action.max_depth = 6;
+        //console.log('=========comp=================');
+        //console.log(matrix);
+        conf.action.max_depth = 4;
         logic.init( conf.action );
 
         var human_matrix = logic.getBestMatix(matrix, conf.action.human);
-        console.log('===========humna===========');
-        console.log(human_matrix.matrix);
+        //console.log('===========humna===========');
+        //console.log(human_matrix.matrix);
         conf.action.max_depth = 2;
         logic.init( conf.action );
 
@@ -1659,12 +1686,12 @@ describe('gameLogicWorker', function() {
         }else{
           //console.log(play.matrix);
           var matrix = logic.copyMarix( play.matrix );
-
-
         }
       }
 
-      console.log(play);
+      assert.equal( play.win, conf.action.human );
+
+      //console.log(play);
 
 
 

@@ -401,6 +401,7 @@ display = (function() {
 
         logic.init( ttt.action );
         matrix = logic.initMatrix();
+        //matrix = logic.initTestMatrix();
         drawBoardByMatrix(matrix);
 
         worker.addEventListener('message', function(e) {
@@ -481,17 +482,17 @@ display = (function() {
       // if( no === 5 ){
       //   return 8;
       // }
-      // if( no === 4 ){
-      //   return 6;
-      // }
+      if( no === 4 ){
+         return 8;
+      }
       if( no === 3 ){
-        return 8;
+        return 6;
       }
       if( no === 2 ){
-        return 2;
+        return 4;
       }
       if( no === 1 ){
-        return 1;
+        return 2;
       }
     }
 
