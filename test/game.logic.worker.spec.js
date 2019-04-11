@@ -627,14 +627,14 @@ describe('gameLogicWorker', function() {
 
     });
 
-    it('possible_move_test2', function(){
+    it('possible move test2', function(){
 
       var possibleMove = logic.possibleMove(testMatrix, testX, testY);
       assert.equal(possibleMove.length, 4);
       //console.log(possibleMove);
     });
 
-    it('possible_move_round_test2', function(){ //todo
+    it('possible move round test2', function(){ //todo
       var testX =3; testY = 2;
       testMatrix[2][3] = conf.action.draftsman_black;
       testMatrix[1][2] = conf.action.blank;
@@ -646,7 +646,7 @@ describe('gameLogicWorker', function() {
       var possibleMove = logic.possibleMove(testMatrix, testX, testY);
     });
 
-    it('possible_move_black_become_king', function(){ //przy towrzeniu matrixa jest tworzona damka
+    it('possible move black become king', function(){ //przy towrzeniu matrixa jest tworzona damka
       var y = 3;
       var x = 2;
       testMatrixEmpty[3][2] = conf.action.draftsman_black;
@@ -1276,7 +1276,7 @@ describe('gameLogicWorker', function() {
     });
 
 
-    it('possible_beats_move_test1', function(){
+    it('possible beats move test1', function(){
 
       var x = 2;
       var y = 3;
@@ -1292,7 +1292,7 @@ describe('gameLogicWorker', function() {
 
 
 
-    it('possible beats possible_beats_move_test2', function(){
+    it('possible beats possible beats move test2', function(){
 
 
       //console.log(testMatrix);
@@ -1324,7 +1324,7 @@ describe('gameLogicWorker', function() {
 
     });
 
-    it('possible_beats_move_arr_round', function(){ //nie dokonca dobrze pokazuje wynik - ale pozniej sie wybierze i tak lepszy wynik
+    it('possible beats move arr round', function(){ //nie dokonca dobrze pokazuje wynik - ale pozniej sie wybierze i tak lepszy wynik
       var testX =3; var testY = 2;
       testMatrix[2][3] = conf.action.draftsman_black;
       testMatrix[1][2] = conf.action.blank;
@@ -1671,13 +1671,13 @@ describe('gameLogicWorker', function() {
       while(matrix){
         //console.log('=========comp=================');
         //console.log(matrix);
-        conf.action.max_depth = 4;
+        conf.action.max_depth = 4; //poziom humana
         logic.init( conf.action );
 
         var human_matrix = logic.getBestMatix(matrix, conf.action.human);
         //console.log('===========humna===========');
         //console.log(human_matrix.matrix);
-        conf.action.max_depth = 2;
+        conf.action.max_depth = 2; //poziom compa
         logic.init( conf.action );
 
         var play = logic.play( human_matrix.matrix );

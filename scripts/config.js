@@ -54,8 +54,7 @@ config = (function() {
             rows : 8,
             cols : 8,
             coef_checker : 10,
-            max_level : 4,
-            max_depth : 2,
+            max_depth : 4,
             inf :    1000000,
             near_inf: 999900,
             draftsman_white : 2,
@@ -67,7 +66,12 @@ config = (function() {
             comp  : -1,
             who_first : 1,
             init_number_draftsman : 12,
-            //draw_after_moves: 100
+            mapLevelToDepth: {
+              1 : 2,
+              2 : 4,
+              3 : 6,
+              4 : 8,
+            }
         }
       }
       return config;

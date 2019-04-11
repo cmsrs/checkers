@@ -26,7 +26,8 @@ display = (function() {
         think,
         possibleMoves,
         possibleMovesKey,
-        worker
+        worker,
+        mapLevelToDepth
         //counterMove
         ;
 
@@ -194,33 +195,21 @@ display = (function() {
     function drawLevelCircle( lctx,  numberLevel ){
         var r = Math.floor(levelLengthCircle/2);
         lctx.beginPath();
-        lctx.fillStyle =  ( parseInt(numberLevel) == ttt.action.max_depth  ) ? ttt.color.theme_light_blue : '#FFFFFF';
+        var level = parseInt(numberLevel);
+        //var depth =
+        lctx.fillStyle = ( mapLevelToDepth[level] == ttt.action.max_depth  ) ? ttt.color.theme_light_blue : '#FFFFFF';
         lctx.arc( r, r , r, 0, 2 * Math.PI, false);
         lctx.lineWidth =  2;
         lctx.strokeStyle = theme_light_black;
         lctx.stroke();
         lctx.fill();
     }
+
     function drawLevelNumber( lctx, numberLevel ){
-        var x_start_point;
-        var x_stop_point;
-        var y_start_point = Math.floor(levelLengthCircle/4);
-        var y_stop_point = Math.floor(levelLengthCircle*3/4);
-
-        x_start_point = 0;
-        lctx.beginPath();
-        for(var i=0; i<numberLevel; i++ ){
-            x_start_point = Math.floor(levelLengthCircle/2) + i*levelTextPadding -  numberLevel * Math.floor(levelTextPadding/3);
-            x_stop_point = x_start_point;
-
-            lctx.moveTo( x_start_point , y_start_point );
-            lctx.lineTo( x_stop_point  , y_stop_point  );
-            lctx.lineWidth = 1;
-            lctx.strokeStyle = theme_light_black;
-        }
-        lctx.stroke();
+      lctx.font = "lighter 14px Verdana, Arial, Helvetica, sans-serif ";
+      lctx.textAlign = "center";
+      lctx.strokeText(numberLevel, 15, 22);
     }
-
 
     function createLevelCanvas( level ){
         var lCanvas = document.createElement("canvas");
@@ -251,6 +240,7 @@ display = (function() {
         theme_logo_red = ttt.color.theme_logo_red,
         theme_light_black = ttt.color.theme_light_black,
         sizeLoader = ttt.settings.sizeLoader;
+        mapLevelToDepth = ttt.action.mapLevelToDepth;
 
         canvas = document.createElement("canvas");
         canvas.id = "main_canvas";
@@ -387,7 +377,6 @@ display = (function() {
 
 
     function initialize( ttt ) {
-        //counterMove = 0;
         setup( ttt  );
         divThink.textContent = '';
         displayScore( ttt );
@@ -461,39 +450,23 @@ display = (function() {
           worker.postMessage({cmd:'init', conf: ttt.action });
         }
 
-        for(var i=1; i<=ttt.action.max_level; i++ ){
-            var lCanvas = createLevelCanvas( levelByNo(i) );
-            lCanvas.id = 'level_'+i;
+        for(var i in mapLevelToDepth){
+            var lCanvas = createLevelCanvas( i );
+            var depth = mapLevelToDepth[i];
+            lCanvas.id = 'level_'+depth;
             lCanvas.addEventListener("click", function(e){
                 boardElement.removeChild(canvas);
                 divWrapLevel.removeChild(divLevel);
-                var level = parseInt( this.id.match( /\d+$/ ) );
-                ttt.action.max_depth = levelByNo( level );
+                var depthChoose = parseInt( this.id.match( /\d+$/ ) );
+                ttt.action.max_depth = depthChoose;
                 worker.terminate();
                 initialize( ttt  );
             }, false);
 
             divLevel.appendChild(lCanvas);
         }
-        worker.addEventListener('error', onError, false);
-    }
 
-    function levelByNo( no ){
-      // if( no === 5 ){
-      //   return 8;
-      // }
-      if( no === 4 ){
-         return 8;
-      }
-      if( no === 3 ){
-        return 6;
-      }
-      if( no === 2 ){
-        return 4;
-      }
-      if( no === 1 ){
-        return 2;
-      }
+        worker.addEventListener('error', onError, false);
     }
 
     return {
