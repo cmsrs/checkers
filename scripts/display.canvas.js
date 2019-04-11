@@ -478,6 +478,12 @@ display = (function() {
     }
 
     function levelByNo( no ){
+      // if( no === 5 ){
+      //   return 8;
+      // }
+      // if( no === 4 ){
+      //   return 6;
+      // }
       if( no === 3 ){
         return 8;
       }

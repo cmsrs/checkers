@@ -86,6 +86,9 @@ describe('gameLogicWorker', function() {
       //console.log(out);
       assert.equal(out,  Math.abs(conf.action.king_black + conf.action.draftsman_black)  );
 
+      var out2 = logic.evaluateMaxScoreByBeat(testMatrixEmpty, conf.action.comp );
+      assert.equal(out2, Math.abs(conf.action.draftsman_white) );
+
     });
   });
 
@@ -383,7 +386,7 @@ describe('gameLogicWorker', function() {
       //console.log(testMatrixEmpty);
       var out3 = logic.evaluate( testMatrixEmpty, conf.action.human );
       //console.log( 'o3', out3);
-      assert.equal(  out3.score, -conf.action.inf );
+      assert.equal(  out3.score, -conf.action.near_inf );
       assert.equal(  out3.win, conf.action.comp );
 
       var y = 1;
@@ -394,7 +397,7 @@ describe('gameLogicWorker', function() {
       //console.log(out4);
 
       //assert.equal(  out4.score, (conf.action.draftsman_white + conf.action.king_white)*conf.action.coef_checker + logic.getYForHuman(y) );
-      assert.equal(  out4.score, conf.action.inf);
+      assert.equal(  out4.score, conf.action.near_inf);
       assert.equal(  out4.win, conf.action.human );
       //console.log(out4);
 
@@ -796,7 +799,7 @@ describe('gameLogicWorker', function() {
   });
 
 
-  describe('optimisation', function() {
+  describe('real examples', function() {
     it('diagnose black move real1 example', function(){
 
       testMatrixEmpty[0][3] = conf.action.draftsman_black;
@@ -841,6 +844,21 @@ describe('gameLogicWorker', function() {
         var eval = logic.evaluate( matrixPossibleMoves[i].matrix, conf.action.comp );
         //console.log(eval);
       }
+
+      //TODO!!
+      // conf.action.max_depth = 6;
+      // logic.init( conf.action );
+      // var out2 = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+      // assert.equal(out2.matrix[0][5], conf.action.draftsman_black);
+
+
+
+      conf.action.max_depth = 8;
+      logic.init( conf.action );
+
+      var out3 = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+      //console.log(out);
+      assert.equal(out3.matrix[0][5], conf.action.draftsman_black);
 
     });
 
@@ -1167,7 +1185,25 @@ describe('gameLogicWorker', function() {
         }
       });
 
+      it('diagnose black move real8 example', function(){
+        testMatrixEmpty[2][1] = conf.action.king_white;
+        testMatrixEmpty[3][0] = conf.action.king_white;
+        testMatrixEmpty[5][2] = conf.action.king_white;
 
+        testMatrixEmpty[7][4] = conf.action.king_black;
+        //console.log(testMatrixEmpty);
+
+        var out = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+        //console.log(out);
+        assert.ok(out.matrix.length);
+
+
+        conf.action.max_depth = 2;
+        logic.init( conf.action );
+        var out2 = logic.getBestMatix(testMatrixEmpty, conf.action.comp);
+        //console.log(out2);
+        assert.ok(out2.matrix.length);
+      });
 
   });
 
@@ -1593,5 +1629,47 @@ describe('gameLogicWorker', function() {
 
     });
   });
+
+  describe.skip('comp vs comp', function() {
+    it('test comp vs comp', function(){
+      conf.action.max_depth = 8;
+      logic.init( conf.action );
+
+      var comp = logic.getBestMatix(initMatrix, conf.action.comp);
+
+      var matrix = comp.matrix;
+
+      //var human = logic.getBestMatix(comp.matrix, conf.action.comp);
+      //console.log(human);
+      while(matrix){
+        console.log('=========comp=================');
+        console.log(matrix);
+        conf.action.max_depth = 6;
+        logic.init( conf.action );
+
+        var human_matrix = logic.getBestMatix(matrix, conf.action.human);
+        console.log('===========humna===========');
+        console.log(human_matrix.matrix);
+        conf.action.max_depth = 2;
+        logic.init( conf.action );
+
+        var play = logic.play( human_matrix.matrix );
+        if( play.win || play.draw ){
+          matrix = false;
+        }else{
+          //console.log(play.matrix);
+          var matrix = logic.copyMarix( play.matrix );
+
+
+        }
+      }
+
+      console.log(play);
+
+
+
+    });
+  });
+
 
 });

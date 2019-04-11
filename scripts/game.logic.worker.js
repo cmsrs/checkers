@@ -11,6 +11,7 @@ logic = (function() {
         draftsman_black,
         king_black,
         coef_checker,
+        near_inf,
         comp
         ;
 
@@ -23,7 +24,8 @@ logic = (function() {
         king_black = conf.king_black;
         init_number_draftsman = conf.init_number_draftsman;
         max_depth  = conf.max_depth;
-        inf =  conf.inf;
+        inf = conf.inf;
+        near_inf = conf.near_inf;
         human =  conf.human;
         blank = conf.blank;
         comp = conf.comp;
@@ -577,13 +579,14 @@ logic = (function() {
         var win = 0;
         if( ((player === comp) &&  !scoreEnemy) || ((player === human) &&  !scorePlayer) ){
           win = comp;
-          return { score: -inf, win: comp};
+          //return { score: 0, win: comp};
+          return { score: -near_inf, win: comp};
         }
         if( (player === human) &&  !scoreEnemy || ((player === comp)  &&  !scorePlayer) ){
           win = human;
-          return { score: inf, win: human};
+          //return { score: 0, win: human};
+          return { score: near_inf, win: human};
         }
-
 
         // var maxScoreByBeatEnemy = evaluateMaxScoreByBeat( matrix, -1*player );
         // var maxScoreByBeat = 0;
@@ -592,7 +595,7 @@ logic = (function() {
         // }
 
         //  + player*Math.abs(sumX) ; //
-        var score = player*scorePlayer*coef_checker + player*sumY;// + player*maxScoreByBeat*coef_checker; // - player*maxScoreByBeatEnemy*coef_checker;
+        var score = player*scorePlayer*coef_checker + player*sumY; /*+ player*maxScoreByBeat*coef_checker - player*maxScoreByBeatEnemy*coef_checker;*/
 
         return { score: score, win: win};
     }
