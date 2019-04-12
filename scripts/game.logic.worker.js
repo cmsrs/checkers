@@ -641,7 +641,7 @@ logic = (function() {
 
         var maxScoreByBeatEnemy = evaluateMaxScoreByBeat( matrix, -1*player );
         var maxScoreByBeat = 0;
-        if( !maxScoreByBeatEnemy ){
+        if( !maxScoreByBeatEnemy ){ //to jest potrzebne aby sam nie dawal sie bic - moje doswiadczenia podczas grania
           var maxScoreByBeat = evaluateMaxScoreByBeat( matrix, player ); //ma to sens jesli samego siebie nie bija patrz test: diagnose black move real3 example
         }
 

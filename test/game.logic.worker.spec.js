@@ -1659,37 +1659,61 @@ describe('gameLogicWorker', function() {
     });
   });
 
-  describe('comp vs comp', function() {
+  //wywolanie testu
+  //./node_modules/mocha/bin/mocha  --timeout 1915000 -g 'comp vs comp'
+  describe.skip('comp vs comp', function() {
     it('test comp vs comp', function(){
 
-      var comp = logic.getBestMatix(initMatrix, conf.action.comp);
+      function getLastMatrix( humanDepth ){
+        var comp = logic.getBestMatix(initMatrix, conf.action.comp);
 
-      var matrix = comp.matrix;
+        var matrix = comp.matrix;
 
-      //var human = logic.getBestMatix(comp.matrix, conf.action.comp);
-      //console.log(human);
-      while(matrix){
-        //console.log('=========comp=================');
-        //console.log(matrix);
-        conf.action.max_depth = 4; //poziom humana
-        logic.init( conf.action );
+        //var human = logic.getBestMatix(comp.matrix, conf.action.comp);
+        //console.log(human);
+        while(matrix){
+          //console.log('=========comp=================');
+          //console.log(matrix);
+          conf.action.max_depth = humanDepth; //poziom humana
+          logic.init( conf.action );
 
-        var human_matrix = logic.getBestMatix(matrix, conf.action.human);
-        //console.log('===========humna===========');
-        //console.log(human_matrix.matrix);
-        conf.action.max_depth = 2; //poziom compa
-        logic.init( conf.action );
+          var human_matrix = logic.getBestMatix(matrix, conf.action.human);
+          //console.log('===========humna===========');
+          //console.log(human_matrix.matrix);
+          conf.action.max_depth = 2; //poziom compa
+          logic.init( conf.action );
 
-        var play = logic.play( human_matrix.matrix );
-        if( play.win || play.draw ){
-          matrix = false;
-        }else{
-          //console.log(play.matrix);
-          var matrix = logic.copyMarix( play.matrix );
+          var play = logic.play( human_matrix.matrix );
+          if( play.win || play.draw ){
+            matrix = false;
+          }else{
+            //console.log(play.matrix);
+            var matrix = logic.copyMarix( play.matrix );
+          }
         }
+        return play;
       }
 
-      assert.equal( play.win, conf.action.human );
+      for( var i=1; i<9; i++ ){
+        //if( 3===i ){ //rogram powtarza ruchy
+        //  continue;
+        //}
+
+        var play = getLastMatrix( i );
+        //var eval = logic.evaluate( play.matrix, play.win );
+
+        console.log('-----human_depth='+ i );
+        console.log(play);
+        var sum = 0;
+        for (var y=0;y<conf.action.rows;y++) {
+          for (var x=0;x<conf.action.cols;x++) {
+            sum += logic.getValue(play.matrix, x, y);
+          }
+        }
+        console.log( 'suma_punkow='+  sum  );
+      }
+
+      //assert.equal( play.win, conf.action.human );
 
       //console.log(play);
 
