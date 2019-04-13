@@ -219,7 +219,7 @@ display = (function() {
         lCanvas.style.marginRight =   Math.floor(ticSize/2)+ "px";
         var lctx = lCanvas.getContext("2d");
         drawLevelCircle( lctx, level );
-        drawLevelNumber( lctx, level );
+        //drawLevelNumber( lctx, level );
         return lCanvas;
     }
 

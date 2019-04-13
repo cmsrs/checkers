@@ -418,7 +418,7 @@ logic = (function() {
 
       if( !out.length ){
         var beat = [];
-        for(let j=1; j<pathLen; j++  ){
+        for(var j=1; j<pathLen; j++  ){
            beat.push(pathIn[j]);
         }
         if( !beat.length ){
@@ -433,7 +433,7 @@ logic = (function() {
         return paths;
       }
 
-      for (ii in out){
+      for (var ii in out){
         paths = possibleBeatsMovePath(matrixIn, out[ii], enemies, pathIn, pathLen, paths);
       }
       return paths;
