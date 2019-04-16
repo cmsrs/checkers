@@ -180,7 +180,6 @@ logic = (function() {
               var value = logic.getValue( matrix, beats[k].beat_x, beats[k].beat_y );
               scoreBeat += Math.abs(value);
             }
-            //console.log('scoreBeat', scoreBeat );
             eval = Math.max(scoreBeat, eval);
           }
         }
@@ -626,29 +625,27 @@ logic = (function() {
         scorePlayer = Math.abs(scorePlayer);
         scoreEnemy = Math.abs(scoreEnemy);
 
+        var maxScoreByBeatEnemy = evaluateMaxScoreByBeat( matrix, -1*player );
+        var maxScoreByBeat = evaluateMaxScoreByBeat( matrix, player );
+        var score = sum*coef_checker + player*sumY + player*maxScoreByBeat*coef_checker - player*maxScoreByBeatEnemy*coef_checker;
 
         var win = 0;
         if( ((player === comp) &&  !scoreEnemy) || ((player === human) &&  !scorePlayer) ){
           win = comp;
-          //return { score: 0, win: comp};
-          return { score: -near_inf, win: comp};
+          return { score: -near_inf, win: comp, real_score: score}; //real score potrzebne do testu
         }
         if( (player === human) &&  !scoreEnemy || ((player === comp)  &&  !scorePlayer) ){
           win = human;
-          //return { score: 0, win: human};
-          return { score: near_inf, win: human};
+          return { score: near_inf, win: human, real_score: score};
         }
 
-        var maxScoreByBeatEnemy = evaluateMaxScoreByBeat( matrix, -1*player );
-        var maxScoreByBeat = 0;
-        if( !maxScoreByBeatEnemy ){ //to jest potrzebne aby sam nie dawal sie bic - moje doswiadczenia podczas grania
-          var maxScoreByBeat = evaluateMaxScoreByBeat( matrix, player ); //ma to sens jesli samego siebie nie bija patrz test: diagnose black move real3 example
-        }
+        // var maxScoreByBeat = 0;
+        // if( !maxScoreByBeatEnemy ){ //to jest potrzebne aby sam nie dawal sie bic - moje doswiadczenia podczas grania
+        //   var maxScoreByBeat = evaluateMaxScoreByBeat( matrix, player ); //ma to sens jesli samego siebie nie bija patrz test: diagnose black move real3 example
+        // }
 
-        var score = sum*coef_checker + player*sumY + player*maxScoreByBeat*coef_checker - player*maxScoreByBeatEnemy*coef_checker;
-        //var score = sum;
 
-        return { score: score, win: win};
+        return { score: score, win: win, real_score: score};
     }
 
     function getBestMatix( matrix_in, player ){
@@ -715,13 +712,11 @@ logic = (function() {
             }
             return {  'alphabeta': value, 'tree': tree };
         }
-        //return {  'alphabeta': value, 'tree': tree };
     }
 
 
     function play( matrix_in ) {
       var out = {};
-      //matrix_in = logic.becomeKing(matrix_in);
 
       var eval = logic.evaluate( matrix_in, human );
       if( eval.win  ){
@@ -733,7 +728,6 @@ logic = (function() {
       }
 
       var  matrix_out = logic.getBestMatix( matrix_in, comp );
-      //matrix_out.matrix = logic.becomeKing(matrix_out.matrix);
 
       var eval = logic.evaluate( matrix_out.matrix, comp  );
       if( eval.win  ){

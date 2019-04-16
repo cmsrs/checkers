@@ -559,6 +559,23 @@ describe('gameLogicWorker', function() {
 
     });
 
+    it('evaluate draw matrix', function() {
+      testMatrixEmpty[2][5] = conf.action.draftsman_black;
+      testMatrixEmpty[3][6] = conf.action.draftsman_black;
+      testMatrixEmpty[4][7] = conf.action.draftsman_white;
+      testMatrixEmpty[5][0] = conf.action.draftsman_black;
+
+      //console.log(testMatrixEmpty);
+      var eval_human = logic.evaluate(testMatrixEmpty, conf.action.human  );
+      //console.log(eval_human);
+
+      var eval_comp = logic.evaluate(testMatrixEmpty, conf.action.comp  );
+      //console.log(eval_comp);
+
+      var eval_0 = logic.evaluate(testMatrixEmpty, 0  );
+      //console.log(eval_0);
+
+    });
 
 
   });
@@ -1695,22 +1712,33 @@ describe('gameLogicWorker', function() {
       }
 
       for( var i=1; i<9; i++ ){
-        //if( 3===i ){ //rogram powtarza ruchy
-        //  continue;
-        //}
+        if( 3===i ){ //rogram powtarza ruchy
+          console.log('-----depth='+ i +' -----skip----' );
+          continue;
+        }
 
         var play = getLastMatrix( i );
-        //var eval = logic.evaluate( play.matrix, play.win );
+        //console.log(play);
 
-        console.log('-----human_depth='+ i );
-        console.log(play);
+
+        if(play.win){
+          var eval = logic.evaluate( play.matrix, play.win );
+          var evalDesc = eval.real_score;
+        }else{
+          var evalHumanP2 = logic.evaluate( play.matrix, conf.action.human );
+          var evalCompP1 = logic.evaluate( play.matrix, conf.action.comp );
+          var evalDesc = "player1=" + evalCompP1.real_score + "/player2="+evalHumanP2.real_score;
+        }
+
+
         var sum = 0;
         for (var y=0;y<conf.action.rows;y++) {
           for (var x=0;x<conf.action.cols;x++) {
             sum += logic.getValue(play.matrix, x, y);
           }
         }
-        console.log( 'suma_punkow='+  sum  );
+        console.log('-----depth='+ i + ' suma punkow='+  sum + ' eval=' + evalDesc + ' win='+ play.win);
+        //console.log(play);
       }
 
       //assert.equal( play.win, conf.action.human );
