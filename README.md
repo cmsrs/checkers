@@ -15,3 +15,8 @@ run all tests:
 ```bash
 ./node_modules/mocha/bin/mocha
 ```
+
+
+You can play with my game on page:
+
+http://www.cmsrs.pl/en/projects/checkers
