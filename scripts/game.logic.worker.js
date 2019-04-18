@@ -1,6 +1,5 @@
 logic = (function() {
     var
-        //conf,
         cols ,
         rows ,
         max_depth  ,
@@ -13,11 +12,11 @@ logic = (function() {
         king_black,
         coef_checker,
         near_inf,
-        comp
+        comp,
+        histCompMatrix
         ;
 
     function init( conf ){
-        //conf = conf;
         cols = conf.cols;
         rows = conf.rows;
         draftsman_white = conf.draftsman_white;
@@ -32,6 +31,7 @@ logic = (function() {
         blank = conf.blank;
         comp = conf.comp;
         coef_checker = conf.coef_checker;
+        histCompMatrix = [];
     }
 
     function initTestMatrix(){
@@ -47,34 +47,39 @@ logic = (function() {
           }
       }
 
+      testMatrixEmpty[0][7] = king_white;
+      //testMatrixEmpty[1][6] = king_black;
+      testMatrixEmpty[7][6] = king_black;
 
-      testMatrixEmpty[0][1] = draftsman_black;
-      testMatrixEmpty[0][3] = draftsman_black;
-      testMatrixEmpty[0][5] = draftsman_black;
-      testMatrixEmpty[0][7] = draftsman_black;
 
-      testMatrixEmpty[1][2] = draftsman_black;
-      testMatrixEmpty[1][6] = draftsman_black;
 
-      testMatrixEmpty[2][1] = draftsman_black;
-      testMatrixEmpty[2][3] = draftsman_black;
-      testMatrixEmpty[2][7] = draftsman_white;
-
-      testMatrixEmpty[3][2] = draftsman_black;
-
-      testMatrixEmpty[4][5] = draftsman_white;
-      testMatrixEmpty[4][7] = draftsman_white;
-
-      testMatrixEmpty[5][0] = draftsman_white;
-
-      testMatrixEmpty[6][1] = draftsman_white;
-      testMatrixEmpty[6][3] = draftsman_white;
-      testMatrixEmpty[6][5] = draftsman_black;
-      testMatrixEmpty[6][7] = draftsman_white;
-
-      testMatrixEmpty[7][0] = draftsman_white;
-      testMatrixEmpty[7][2] = draftsman_white;
-      testMatrixEmpty[7][4] = draftsman_white;
+      // testMatrixEmpty[0][1] = draftsman_black;
+      // testMatrixEmpty[0][3] = draftsman_black;
+      // testMatrixEmpty[0][5] = draftsman_black;
+      // testMatrixEmpty[0][7] = draftsman_black;
+      //
+      // testMatrixEmpty[1][2] = draftsman_black;
+      // testMatrixEmpty[1][6] = draftsman_black;
+      //
+      // testMatrixEmpty[2][1] = draftsman_black;
+      // testMatrixEmpty[2][3] = draftsman_black;
+      // testMatrixEmpty[2][7] = draftsman_white;
+      //
+      // testMatrixEmpty[3][2] = draftsman_black;
+      //
+      // testMatrixEmpty[4][5] = draftsman_white;
+      // testMatrixEmpty[4][7] = draftsman_white;
+      //
+      // testMatrixEmpty[5][0] = draftsman_white;
+      //
+      // testMatrixEmpty[6][1] = draftsman_white;
+      // testMatrixEmpty[6][3] = draftsman_white;
+      // testMatrixEmpty[6][5] = draftsman_black;
+      // testMatrixEmpty[6][7] = draftsman_white;
+      //
+      // testMatrixEmpty[7][0] = draftsman_white;
+      // testMatrixEmpty[7][2] = draftsman_white;
+      // testMatrixEmpty[7][4] = draftsman_white;
 
       return testMatrixEmpty;
     }
@@ -718,13 +723,16 @@ logic = (function() {
     function play( matrix_in ) {
       var out = {};
 
+      //histHumanMatrix.push(matrix_in);
+
       var eval = logic.evaluate( matrix_in, human );
       if( eval.win  ){
         return { 'win': eval.win, 'draw': 0, 'matrix':matrix_in  };
       }
       var possibleMovesComp = logic.possibleMoves(matrix_in, comp);
       if( !possibleMovesComp.length ){
-        return { 'win': 0, 'draw': comp, 'matrix':matrix_in  };
+        //  , 'draw': comp
+        return { 'win': human,  'draw': 0, 'matrix':matrix_in  };
       }
 
       var  matrix_out = logic.getBestMatix( matrix_in, comp );
@@ -735,18 +743,57 @@ logic = (function() {
       }
       var possibleMovesHuman = logic.possibleMoves(matrix_out.matrix, human);
       if( !possibleMovesHuman.length ){
-        return { 'win': 0, 'draw': human, 'matrix':matrix_out.matrix, 'move':matrix_out.move   };
+        //'draw': human
+        return { 'win': comp,  'draw': 0, 'matrix':matrix_out.matrix, 'move':matrix_out.move   };
       }
 
-      return { 'win': 0, 'draw': 0, 'matrix':matrix_out.matrix, 'move':matrix_out.move   };
+      histCompMatrix.push(matrix_out.matrix);
+      var isDraw = logic.isDraw();
+
+      var play = { 'win': 0, 'draw': isDraw, 'matrix':matrix_out.matrix, 'move':matrix_out.move   };
+      //console.log(play);
+      return play;
     }
+
+    function isDraw() {
+
+      if( histCompMatrix.length > 10 ){
+        var lengthComp = histCompMatrix.length;
+        var compareOdd = compareMatrix( histCompMatrix[lengthComp-1], histCompMatrix[lengthComp-3], histCompMatrix[lengthComp-5]);
+        var compareEven = compareMatrix( histCompMatrix[lengthComp-2], histCompMatrix[lengthComp-4], histCompMatrix[lengthComp-6]);
+        if( compareOdd && compareEven ){
+          return 1;
+        }
+      }
+      return 0;
+    }
+
+    function compareMatrix(matrix1, matrix2, matrix3){
+      var theSame = true;
+      for (var y=0;y<rows;y++) {
+          for (var x=0;x<cols;x++) {
+              if(matrix1[y][x] !== matrix2[y][x]){
+                theSame = false;
+                break;
+              }
+              if(matrix2[y][x] !== matrix3[y][x]){
+                theSame = false;
+                break;
+              }
+          }
+      }
+      return theSame;
+    }
+
+
 
     return {
         init : init,
         play : play,
+        isDraw : isDraw,
         evaluate : evaluate,
         initMatrix : initMatrix,
-        initTestMatrix: initTestMatrix,
+        //initTestMatrix: initTestMatrix,
         possibleMove : possibleMove,
         possibleOneStepMove : possibleOneStepMove,
         possibleBeatsMove : possibleBeatsMove,

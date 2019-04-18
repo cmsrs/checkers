@@ -345,17 +345,15 @@ display = (function() {
             startThink();
             think = 1;
 
-            var promise1 = new Promise(function(resolve, reject) {
-              setTimeout(function() {
-                resolve('comp_move');
-              }, 100);
-            });
+            // var promise1 = new Promise(function(resolve, reject) {
+            //   setTimeout(function() {
+            //     resolve('comp_move');
+            //   }, 10);
+            // });
 
-            //counterMove++;
-            //console.log(counterMove);
-            promise1.then(function(value) {
-              worker.postMessage({cmd:'play', conf: ttt.action, matrix: matrix});
-            });
+            //promise1.then(function(value) {
+            worker.postMessage({cmd:'play', conf: ttt.action, matrix: matrix});
+            //});
 
           }
         }
@@ -364,6 +362,7 @@ display = (function() {
 
     function isFinishByPalyer( move, palyer ){
       if( (move.draw === palyer) || (move.win === palyer) ){
+        think = 1;
         displayFinish( move );
         setTimeout(function(){
             boardElement.removeChild(canvas);
@@ -401,7 +400,6 @@ display = (function() {
 
             if( e.data.cmd == 'play'  ){
 
-
               stopThink();
               var move = e.data.move;
               isFinishByPalyer( move, human );
@@ -436,18 +434,20 @@ display = (function() {
               }
 
               matrix = logic.copyMarix(move.matrix);
-              think = 0;
+              if( !( move.draw || move.win ) ){
+                think = 0;
+              }
+
             }
 
             canvas.addEventListener("click", clickBall, false);
         }, false);
 
+        worker.postMessage({cmd:'init', conf: ttt.action });
         if( ttt.action.who_first == ttt.action.comp ){
           think = 1;
           startThink();
           worker.postMessage({cmd:'play', conf: ttt.action , matrix: matrix});
-        }else{
-          worker.postMessage({cmd:'init', conf: ttt.action });
         }
 
         for(var i in mapLevelToDepth){

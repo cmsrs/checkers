@@ -5,7 +5,7 @@ var conf = config.getConfig();
 self.addEventListener('message', function(e) {
 
     if( e.data.cmd == 'play'  ){
-        logic.init( e.data.conf );
+
 
         var move = logic.play( e.data.matrix  );
 

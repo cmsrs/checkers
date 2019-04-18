@@ -365,8 +365,10 @@ describe('gameLogicWorker', function() {
 
       //console.log(testMatrixEmpty);
       var play = logic.play(testMatrixEmpty);
-      assert.equal(play.draw, conf.action.human);
-      assert.equal(play.win,0);
+      //console.log(play);
+
+      assert.equal(play.draw, 0);
+      assert.equal(play.win, conf.action.comp );
       assert.notDeepEqual(play.matrix, testMatrixEmpty);
 
       matrixComp = logic.getBestMatix( testMatrixEmpty, conf.action.comp );
@@ -383,9 +385,10 @@ describe('gameLogicWorker', function() {
 
       //console.log(testMatrixEmpty);
       var play = logic.play(testMatrixEmpty);
+      //console.log(play);
 
-      assert.equal(play.draw, conf.action.comp);
-      assert.equal(play.win,0);
+      assert.equal(play.draw, 0);
+      assert.equal(play.win,conf.action.human);
       assert.deepEqual(play.matrix, testMatrixEmpty);
 
 
@@ -1588,6 +1591,8 @@ describe('gameLogicWorker', function() {
   });
 
 
+
+
   describe('getValue(matrix, x, y)', function() {
     it('get value', function(){
 
@@ -1676,27 +1681,85 @@ describe('gameLogicWorker', function() {
     });
   });
 
+  describe( 'test draw', function(){
+    it( 'make draw', function(){
+        testMatrixEmpty[0][7] = conf.action.king_white;
+        testMatrixEmpty[7][6] = conf.action.king_black;
+
+        //var play = logic.play( testMatrixEmpty );
+        //var newMatrix = logic.copyMarix(play.matrix);
+
+
+        //newMatrix = play.matix;
+        var isDraw = false;
+        for(var i=0; i<11; i++  ){
+
+          if( testMatrixEmpty[0][7] === conf.action.king_white ){
+            //console.log('===1===');
+            testMatrixEmpty[0][7] = conf.action.blank;
+            testMatrixEmpty[7][0] = conf.action.king_white;
+          }
+          else if(  testMatrixEmpty[7][0] === conf.action.king_white   ){
+            //console.log('===2===');
+            testMatrixEmpty[7][0] = conf.action.blank;
+            testMatrixEmpty[0][7] = conf.action.king_white;
+          }
+
+          //console.log('---human--');
+          //console.log(testMatrixEmpty);
+
+
+          var play2 = logic.play( testMatrixEmpty );
+          //console.log('---comp--');
+          //console.log(play2.matrix);
+          if( play2.draw  ){
+            isDraw = true;
+            break;
+          }
+
+
+          //console.log(play2.draw);
+
+          testMatrixEmpty = logic.copyMarix(play2.matrix);
+        }
+
+        //logic.isDraw();
+
+        //console.log(isDraw);
+
+        assert.ok(isDraw);
+
+
+        //console.log(newMatrix3);
+        //console.log(play.matix);
+
+
+    });
+  });
+
+
   //wywolanie testu
-  //./node_modules/mocha/bin/mocha  --timeout 1915000 -g 'comp vs comp'
+  //./node_modules/mocha/bin/mocha  --timeout 1915000 -g 'test comp vs comp'
   describe.skip('comp vs comp', function() {
     it('test comp vs comp', function(){
 
       function getLastMatrix( humanDepth ){
-        var comp = logic.getBestMatix(initMatrix, conf.action.comp);
+        //var comp = logic.getBestMatix(initMatrix, conf.action.comp);
+        //var matrix = comp.matrix;
 
-        var matrix = comp.matrix;
+        var matrix =  logic.copyMarix(initMatrix);
 
         //var human = logic.getBestMatix(comp.matrix, conf.action.comp);
         //console.log(human);
         while(matrix){
           //console.log('=========comp=================');
-          //console.log(matrix);
+          //console.log( matrix);
           conf.action.max_depth = humanDepth; //poziom humana
           logic.init( conf.action );
 
           var human_matrix = logic.getBestMatix(matrix, conf.action.human);
           //console.log('===========humna===========');
-          //console.log(human_matrix.matrix);
+          //console.log( human_matrix.matrix);
           conf.action.max_depth = 2; //poziom compa
           logic.init( conf.action );
 
@@ -1711,10 +1774,13 @@ describe('gameLogicWorker', function() {
         return play;
       }
 
-      for( var i=1; i<9; i++ ){
-        if( 3===i ){ //rogram powtarza ruchy
-          console.log('-----depth='+ i +' -----skip----' );
-          continue;
+      for( var i=1; i<13; i++ ){
+      //for( var i=3; i<4; i++ ){
+
+        //console.log('___________-');
+        if( 3===i || 4===i ){ //rogram powtarza ruchy
+           console.log('-----depth='+ i +' -----skip----' );
+           continue;
         }
 
         var play = getLastMatrix( i );
@@ -1737,6 +1803,12 @@ describe('gameLogicWorker', function() {
             sum += logic.getValue(play.matrix, x, y);
           }
         }
+        //if(i === 1 ){
+        //  assert.equal( play.win  );
+        //}
+
+
+
         console.log('-----depth='+ i + ' suma punkow='+  sum + ' eval=' + evalDesc + ' win='+ play.win);
         //console.log(play);
       }
