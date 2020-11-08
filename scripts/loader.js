@@ -22,6 +22,10 @@ if (Modernizr.canvas && Modernizr.webworkers ){
         if(typeof  lang !==  'undefined' ){
             ttt.lang =  lang;
         }
+        if(typeof pathToCheckers !==  'undefined' ){
+            ttt.path = pathToCheckers;
+        }
+
 
         var jewelProto = document.getElementById("square-size");
         var rect = jewelProto.getBoundingClientRect();

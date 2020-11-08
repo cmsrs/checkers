@@ -4,6 +4,7 @@ config = (function() {
 
     var config = {
         lang : 'en',
+        path : '',
         text : {
             pl : {
                 title : 'Warcaby',

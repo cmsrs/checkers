@@ -393,7 +393,7 @@ display = (function() {
         think = 0;
 
 
-        worker = new Worker('scripts/do.work.js');
+        worker = new Worker( ttt.path + 'scripts/do.work.js');
 
         logic.init( ttt.action );
         matrix = logic.initMatrix();
