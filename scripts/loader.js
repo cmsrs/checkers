@@ -19,6 +19,9 @@ window.requestAnimationFrame = (function() {
 if (Modernizr.canvas && Modernizr.webworkers ){
 
     window.addEventListener("load", function() {
+        if(typeof  lang !==  'undefined' ){
+            ttt.lang =  lang;
+        }
 
         var jewelProto = document.getElementById("square-size");
         var rect = jewelProto.getBoundingClientRect();

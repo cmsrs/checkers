@@ -7,7 +7,6 @@ config = (function() {
         text : {
             pl : {
                 title : 'Warcaby',
-                //alternative : 'Aby zagrać w grę musisz posiadać nową wersję przeglądarki (rekomendowane przeglądarki: firefox lub chrome)',
                 alternative : 'Aby zagrać w grę musisz posiadać nową wersję przeglądarki (rekomendowane przeglądarki: firefox lub chrome)',
                 draw : 'Remis.',
                 you_win : 'Gratuluje wygraleś!',
@@ -19,7 +18,6 @@ config = (function() {
             },
             en : {
                 title : 'Checkers',
-                //alternative : 'In order to play with this game, You have to install a new web browser (recommend: firefox or chrome)',
                 alternative : 'In order to play with this game, You have to install a new web browser (recommend: firefox or chrome)',
                 draw : 'Draw.',
                 you_win : 'Congratulations!',
