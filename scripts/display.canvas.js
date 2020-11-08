@@ -258,11 +258,14 @@ display = (function() {
 
         var widthGame = cols  * ticSize;
 
-        var el_h1 =  document.getElementsByTagName('h1');
+
         var el_header =  document.getElementsByTagName('header');
-        el_header[0].style.width = widthGame + "px";
-        el_header[0].style.height = ticSize + "px";
-        //el_h1[0].style.width = widthGame + "px";
+
+        if(  el_header.length   ){
+            el_header[0].style.width = widthGame + "px";
+            el_header[0].style.height = ticSize + "px";
+        }
+
         document.getElementById('score').style.width = widthGame + "px";
 
 
@@ -285,7 +288,12 @@ display = (function() {
 
         levelTextPadding = Math.floor( ticSize/8 );
 
-        el_h1[0].textContent = ttt.text[lang].title;
+
+        var el_h1 =  document.getElementsByTagName('h1');
+        if(  el_h1.length  ){
+            el_h1[0].textContent = ttt.text[lang].title;
+        }
+
         document.getElementById('cpu').textContent = ttt.text[lang].cpu;
         document.getElementById('you').textContent = ttt.text[lang].you;
     }
