@@ -37,7 +37,7 @@ header a#logo_game span.cms{
 header a#logo_game span.rs{
     color: #ff5050;
 }
-h1{
+h1#title{
     margin-top: 0px;
     margin-bottom: 0px;
     float: right;
