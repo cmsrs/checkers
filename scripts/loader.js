@@ -27,7 +27,7 @@ if (Modernizr.canvas && Modernizr.webworkers ){
         }
 
 
-        var jewelProto = document.getElementById("square-size");
+        var jewelProto = document.getElementById("square-size-checkers");
         var rect = jewelProto.getBoundingClientRect();
         ttt.settings.ticSize = rect.width;
         display.initialize( ttt );
