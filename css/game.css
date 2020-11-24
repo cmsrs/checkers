@@ -14,7 +14,7 @@ body
     margin-left: 3px;
     border : 1px solid #191919;
 }
-#square-size {
+#square-size-checkers {
     position : absolute;
     width : 1.1em;
     height : 1.1em;
