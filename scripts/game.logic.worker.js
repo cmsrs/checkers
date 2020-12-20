@@ -282,7 +282,7 @@ logic = (function() {
 
     function checkIsKingHaveBeat(matrixIn, x, y, value, enemies, signX, signY){
       var out = [];
-      var move = 6;
+      var move = rows - 2;
 
       var notBlank = [];
       var isKingBeat = false;
@@ -309,7 +309,7 @@ logic = (function() {
 
     function kingBeatOneSite(matrixIn, x, y, value, enemies  , wasBeatX, wasBeatY, signX, signY ) {
       var out = [];
-      var move = 6;
+      var move = rows - 2;
 
       var notBlank = [];
       var movesWithoutJump = [];
@@ -369,7 +369,7 @@ logic = (function() {
 
     function possibleBeatsKing( matrixIn, x, y, value, enemies  , wasBeatX, wasBeatY ){
       var out = [];
-      var move = 6;
+      var move = rows - 2;
 
       var site1 = kingBeatOneSite(matrixIn, x, y, value, enemies  , wasBeatX, wasBeatY, -1, -1 );
       if(site1.length){
@@ -467,7 +467,7 @@ logic = (function() {
     function possibleSimpleKingMove(matrixIn, x, y, value){
 
       var out = [];
-      var move = 8;
+      var move = rows;
 
       for (var k=1;k<move;k++) {
         var val = getValue(matrixIn, x-k, y-k);

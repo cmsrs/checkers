@@ -26,6 +26,11 @@ if (Modernizr.canvas && Modernizr.webworkers ){
             ttt.path = pathToCheckers;
         }
 
+        if(typeof isPolishDraughts !==  'undefined' ){
+            ttt.action.rows = 10;
+            ttt.action.cols = 10;
+	    ttt.action.cinit_number_draftsman = 20;
+        }
 
         var jewelProto = document.getElementById("square-size-checkers");
         var rect = jewelProto.getBoundingClientRect();
