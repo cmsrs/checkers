@@ -30,9 +30,13 @@ if (Modernizr.canvas && Modernizr.webworkers ){
             ttt.action.rows = 10;
             ttt.action.cols = 10;
 	        ttt.action.init_number_draftsman = 20;
+            ttt.text.pl.title = 'Warcaby polskie';
+            ttt.text.en.title = 'Polish draughts';
+            var jewelProto = document.getElementById("square-size-ten");
+        }else{
+            var jewelProto = document.getElementById("square-size-checkers");
         }
 
-        var jewelProto = document.getElementById("square-size-checkers");
         var rect = jewelProto.getBoundingClientRect();
         ttt.settings.ticSize = rect.width;
         display.initialize( ttt );
