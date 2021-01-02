@@ -33,13 +33,13 @@ if (Modernizr.canvas && Modernizr.webworkers ){
             ttt.text.pl.title = 'Warcaby polskie';
             ttt.text.en.title = 'Polish draughts';
             var jewelProto = document.getElementById("square-size-ten");
-        }else if(  typeof isDraughtsMin !==  'undefined'  ){
+        }else if(  typeof isDraughtsMini !==  'undefined'  ){
             ttt.action.rows = 6;
             ttt.action.cols = 6;
 	        ttt.action.init_number_draftsman = 6;
             ttt.text.pl.title = 'Mini warcaby';
-            ttt.text.en.title = 'Min draughts';
-            var jewelProto = document.getElementById("square-size-checkers");
+            ttt.text.en.title = 'Mini draughts';
+            var jewelProto = document.getElementById("square-size-six");
         }else{
             var jewelProto = document.getElementById("square-size-checkers");
         }
