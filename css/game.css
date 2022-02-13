@@ -14,11 +14,21 @@ body
     margin-left: 3px;
     border : 1px solid #191919;
 }
-#square-size-checkers {
+#square-size, #square-size-checkers, #square-size-ten, #square-size-six{
     position : absolute;
+    left : -1000px;
+}
+#square-size-six{
+    width : 1.2em;
+    height : 1.2em;
+}
+#square-size-checkers  {
     width : 1.1em;
     height : 1.1em;
-    left : -1000px;
+}
+#square-size-ten {
+    width : 0.9em;
+    height : 0.9em;
 }
 header{
     margin-top: 3px;
@@ -86,15 +96,3 @@ h1#title{
 #level .circle{
     float: left;
 }
-/*
-#level .wrap_level{
-    float: left;
-}
-#level .wrap_level input{
-    display:inline;
-    margin-left: 30px;
-}
-#level .label{
-    float: left;
-}
-*/
