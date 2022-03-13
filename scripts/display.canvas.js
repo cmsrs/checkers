@@ -216,7 +216,7 @@ display = (function() {
         lCanvas.width = levelLengthCircle;
         lCanvas.height = levelLengthCircle;
         lCanvas.className = "circle";
-        lCanvas.style.marginRight =   Math.floor(ticSize/2)+ "px";
+        lCanvas.style.marginRight =   Math.floor(ticSize/3)+ "px";
         var lctx = lCanvas.getContext("2d");
         drawLevelCircle( lctx, level );
         //drawLevelNumber( lctx, level );
