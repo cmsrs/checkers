@@ -16,3 +16,79 @@
         font-size : 64px;
     }
 }
+
+
+
+#square-size, #square-size-checkers, #square-size-ten, #square-size-six{
+    position : absolute;
+    left : -1000px;
+    width : 70px !important;
+    height : 70px !important;
+}
+
+@media(max-width: 730px) {
+  #square-size {
+      width : 50px !important;
+      height : 50px !important;
+  }
+  #square-size-checkers {
+      width : 58px !important;
+      height : 58px !important;
+  }
+
+  #square-size-six {
+      width : 60px !important;
+      height : 60px !important;
+  }
+
+  #square-size-ten {
+      width : 45px !important;
+      height : 45px !important;
+  }
+}
+
+@media(max-width: 600px) {
+
+  #square-size {
+      width : 35px !important;
+      height : 35px !important;
+  }
+  #square-size-checkers {
+      width : 43px !important;
+      height : 43px !important;
+  }
+  #square-size-six {
+      width : 45px !important;
+      height : 45px !important;
+  }
+
+  #square-size-ten {
+      width : 39px !important;
+      height : 39px !important;
+  }
+
+
+}
+
+@media(max-width: 360px) {
+
+  #square-size {
+      width : 32px !important;
+      height : 32px !important;
+  }
+  #square-size-checkers {
+      width : 37px !important;
+      height : 37px !important;
+  }
+  #square-size-six {
+      width : 40px !important;
+      height : 40px !important;
+  }
+
+  #square-size-ten {
+      width : 29px !important;
+      height : 29px !important;
+  }
+
+}
+
