@@ -43,7 +43,8 @@ config = (function() {
             ticPadding : 10,
             ticPaddingX : 26,
             ticWidth : 4,
-            ticWidthX : 4
+            ticWidthX : 4,
+            animateRatio : 0.8 //consider move balls 
         },
         score :{
             you: 0,

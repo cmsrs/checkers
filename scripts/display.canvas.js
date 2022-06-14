@@ -27,7 +27,8 @@ display = (function() {
         possibleMoves,
         possibleMovesKey,
         worker,
-        mapLevelToDepth
+        mapLevelToDepth,
+        animateRatio
         //counterMove
         ;
 
@@ -46,6 +47,15 @@ display = (function() {
             }
         }
     }
+
+    function oneBoxBackground(bgctx, x, y ){
+      var x_start = x * ticSize;
+      var y_start = y * ticSize;
+      bgctx.fillStyle = ttt.color.theme_light_blue;
+      bgctx.fillRect( x_start, y_start, ticSize, ticSize);
+
+    }
+
 
     function drawBoardByMatrix(matrixIn){
       for (var y=0;y<rows;y++) {
@@ -241,6 +251,7 @@ display = (function() {
         theme_light_black = ttt.color.theme_light_black,
         sizeLoader = ttt.settings.sizeLoader;
         mapLevelToDepth = ttt.action.mapLevelToDepth;
+        animateRatio = ttt.settings.animateRatio;
 
         canvas = document.createElement("canvas");
         canvas.id = "main_canvas";
@@ -412,34 +423,88 @@ display = (function() {
               var move = e.data.move;
               isFinishByPalyer( move, human );
 
-              createBackground( ctx );
-              drawBoardByMatrix(move.matrix);
+              /*******************************/
+              /* animation move ball  - start*/
+              /*******************************/
+              var pointsMove = []; //beat or move checker
+              var moveFromX = '';
+              var moveFromY = '';
 
-              //  setTimeout(function() {
-              if(typeof move.move !== 'undefined' ){ //ta logike moznabylo przeniesc do medelu
+              if(typeof move.move !== 'undefined' ){ //this logic can be moved to model,
+
                 var movemove = move.move;
-                drawXByXY(ctx, movemove.from_x, movemove.from_y );
-                drawXByXY(ctx, movemove.x, movemove.y );
+                moveFromX = movemove.from_x;
+                moveFromY = movemove.from_y;
+
                 if(typeof movemove.beats  !== 'undefined'  ){
                   var movemovebeats = movemove.beats;
                   for(j in movemovebeats){
-                    if( !((movemovebeats[j].x === movemove.x) &&  (movemovebeats[j].y === movemove.y)) ){
-                      drawXByXY(ctx, movemovebeats[j].x, movemovebeats[j].y );
-                    }
+                    pointsMove.push({ x:movemovebeats[j].x, y:movemovebeats[j].y });
                   }
+                }else{
+                  pointsMove.push({ x:movemove.x, y:movemove.y });
                 }
               }
-              //  }, 50);
 
+              var startValue = logic.getValue(matrix, moveFromX, moveFromY);
+              drawXByXY(ctx, moveFromX, moveFromY );
+
+              var t = 0;
+              var animIncrement = 0;
+              var animOldVals = [];
+
+              requestAnimationFrame(animateCircle);
+
+              function animateCircle()
+              {
+                var half = Math.floor(ticSize/2);
+                var r =  half - ticPadding;
+
+                if (t > pointsMove.length * r) {
+                  createBackground( ctx );
+                  drawBoardByMatrix(move.matrix);
+
+                  var mandatoryMoves = e.data.mandatoryMoves;
+                  if( mandatoryMoves.length){
+                    for(var i in  mandatoryMoves){
+                      drawChequer( mandatoryMoves[i].x, mandatoryMoves[i].y, mandatoryMoves[i].value, true );
+                    }
+                  }
+
+                  return false;
+                }
+
+                ctx.beginPath();
+                ctx.fillStyle = (ttt.action.draftsman_black === startValue) ? ttt.color.theme_light_blue : theme_black;
+                ctx.lineWidth =  ticWidth;
+                ctx.strokeStyle = theme_black;
+
+                for(var cc = 0; cc < pointsMove.length;  cc++){
+                  if( ( t >= (cc * r) )  &&  ( t < (cc+1)* r ) ){
+
+                    if( (animIncrement > 0) && (animOldVals[animIncrement - 1].cc !== cc) ){
+                      oneBoxBackground(ctx, animOldVals[animIncrement - 1].x, animOldVals[animIncrement - 1].y ); //clear last ball in anim
+                    }
+                    var rr = t - (cc * r);
+                    ctx.arc(  (ticSize * pointsMove[cc].x) + half,  (ticSize * pointsMove[cc].y) + half, rr , 0, 2 * Math.PI, false);
+                    animOldVals[animIncrement] = { cc: cc, x:pointsMove[cc].x, y: pointsMove[cc].y };
+                  }
+                }
+
+                ctx.stroke();
+                ctx.fill();
+
+                t = t + animateRatio;
+                animIncrement++;
+                requestAnimationFrame(animateCircle);
+              }
+
+              /*******************************/
+              /* animation move ball  - stop*/
+              /*******************************/
 
               isFinishByPalyer( move, comp );
               possibleMoves =  e.data.possibleMoves;
-              var mandatoryMoves = e.data.mandatoryMoves;
-              if( mandatoryMoves.length){
-                for(var i in  mandatoryMoves){
-                  drawChequer( mandatoryMoves[i].x, mandatoryMoves[i].y, mandatoryMoves[i].value, true );
-                }
-              }
 
               matrix = logic.copyMarix(move.matrix);
               if( !( move.draw || move.win ) ){
